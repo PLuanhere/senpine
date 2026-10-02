@@ -1,0 +1,8 @@
+/* Keep the fixed navigation readable over both photo and solid sections. */
+.site-header,
+.site-header.is-scrolled {
+  background: var(--header-scrolled-bg);
+  color: var(--header-scrolled-text);
+  border-bottom-color: var(--header-scrolled-border);
+  backdrop-filter: blur(14px);
+}

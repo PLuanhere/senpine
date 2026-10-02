@@ -1,0 +1,425 @@
+﻿
+
+SENPINE
+WEBSITE PRODUCT REQUIREMENTS DOCUMENT
+Interactive Brand Experience • Material Showroom • Simulated Commerce • Traceability
+
+Dự án SenPine – Vải sinh học từ tơ sen và sợi lá dứa trong thời trang bền vững
+Tài liệu dùng làm blueprint triển khai cho Codex / đội phát triển
+Phiên bản 1.0 • 09/2026
+
+1. TỔNG QUAN & PHẠM VI
+Mục tiêu là xây dựng một website thương hiệu cho SenPine nhưng tránh hoàn toàn cảm giác của một “website doanh nghiệp thông thường”. Trải nghiệm phải mang tính kể chuyện, tương tác và giàu hình ảnh: người dùng khám phá hành trình từ tự nhiên → xơ → sợi → vải → thời trang, sau đó bước vào khu trưng bày sản phẩm, xem giá kế hoạch, thêm sản phẩm vào giỏ mô phỏng và đi qua quy trình checkout không thanh toán thật.
+Định vị sản phẩm — Digital Brand Experience + Interactive Material Showroom + Product Catalog + Simulated E-commerce + B2B Lead Generation + Demo Traceability.
+
+1.1. Mục tiêu kinh doanh/giới thiệu
+Giới thiệu SenPine như một thương hiệu vật liệu và thời trang sinh học có câu chuyện rõ ràng, thay vì chỉ là một trang thông tin tĩnh.
+Giải thích trực quan mối liên hệ giữa tơ sen, sợi lá dứa, ba dòng vải SenPine và các sản phẩm thời trang/phụ kiện.
+Cho phép khách B2C xem danh mục, giá kế hoạch và mô phỏng hành vi mua hàng mà không phát sinh giao dịch thực tế.
+Cho phép khách B2B xem vật liệu, ứng dụng, bộ mẫu và gửi yêu cầu báo giá/yêu cầu mẫu ở mức demo.
+Thể hiện ý tưởng truy xuất nguồn gốc bằng Product Passport/QR Code với dữ liệu mô phỏng.
+1.2. Mục tiêu trải nghiệm người dùng
+Người dùng mới nên hiểu website theo chuỗi logic sau:
+SenPine là gì→ Vì sao là Lotus + Pineapple→ Nguyên liệu biến thành xơ/sợi/vải như thế nào→ Có những vật liệu nào→ Tạo ra sản phẩm thời trang nào→ Giá kế hoạch bao nhiêu→ Có thể trải nghiệm giỏ hàng/checkout mô phỏng→ Có thể truy xuất câu chuyện sản phẩm→ Doanh nghiệp có thể yêu cầu mẫu/báo giá
+1.3. Phạm vi không triển khai
+Không triển khai
+Lý do
+Thanh toán thật (VNPay, MoMo, Stripe, PayPal...)
+Website chỉ mô phỏng trải nghiệm; không phát sinh giao dịch tài chính.
+Đơn hàng thật / shipping API
+Không có hệ thống fulfillment, vận chuyển hoặc xử lý đơn thực.
+Đăng ký/đăng nhập tài khoản
+Không cần user database cho MVP.
+Admin dashboard ở phiên bản đầu
+Dữ liệu catalog có thể seed trong file data để ưu tiên UI/UX.
+Chứng nhận môi trường không có căn cứ
+Không tự thêm badge/chứng nhận hoặc số liệu bền vững không có nguồn.
+
+2. CONCEPT UI/UX CỐT LÕI
+2.1. Big Idea
+Concept chủ đạo — FROM NATURE → TO FIBER → TO FABRIC → TO FASHION
+
+Homepage được thiết kế như một hành trình cuộn (scroll-driven story), không phải chuỗi banner/card giống template. Các chuyển cảnh chính phải giúp người xem cảm nhận được vật liệu “được hình thành” từ tự nhiên và cuối cùng trở thành sản phẩm thời trang.
+2.2. Ba “wow moments” bắt buộc
+Wow moment
+Mô tả trải nghiệm
+Mục đích
+Nature → Fiber
+Lotus và Pineapple xuất hiện ở hai phía; khi cuộn, các đường sợi mảnh được kéo ra, hội tụ và chuyển thành cấu trúc vật liệu.
+Tạo signature cho thương hiệu ngay đầu website.
+Fabric → Fashion
+Một texture vải mở rộng full-screen, sau đó morph/reveal thành silhouette hoặc hình sản phẩm thời trang và dẫn vào Showroom.
+Tạo chuyển tiếp tự nhiên từ vật liệu sang sản phẩm.
+Product Passport
+Từ Product Detail, người dùng “Trace this piece” và xem hành trình ngược Product → Fabric → Yarn → Fiber → Nature.
+Kết nối câu chuyện vật liệu, truy xuất và thương hiệu.
+
+2.3. Phong cách hình ảnh
+Premium + Natural + Editorial + Vietnamese, tránh phong cách SaaS/dashboard.
+Ảnh ưu tiên macro texture vải, vật liệu tự nhiên, thao tác thủ công, người mẫu và bối cảnh tối giản.
+Nền sáng ivory/cream, màu xanh lá trầm; hạn chế gradient công nghệ, neon hoặc kính mờ quá mức.
+Typography lớn và giàu nhịp điệu; có thể dùng chữ outline, text mask hoặc text reveal có kiểm soát.
+2.4. Design tokens gợi ý
+Token
+Giá trị gợi ý
+Cách dùng
+Ivory
+#F7F3E9
+Nền chính
+Cream
+#EFE8D8
+Section phụ
+Sage Green
+#87956A
+Accent dịu
+Forest Green
+#243B2C
+Primary dark
+Lotus Green
+#687B45
+Brand accent
+Warm Gold
+#B69A63
+Premium highlight
+Charcoal
+#20231F
+Body text
+
+Typography: Heading dùng Cormorant Garamond hoặc Playfair Display; body/UI dùng Be Vietnam Pro hoặc Inter. Nếu build cần tối ưu font, có thể chọn một serif + một sans duy nhất.
+3. INFORMATION ARCHITECTURE & ROUTING
+/├── /story├── /materials│   ├── /pinefiber│   ├── /senpine-blend│   └── /sensilk├── /collection├── /products/[slug]├── /saved├── /experience/checkout├── /trace│   └── /[code]├── /business├── /business/request-sample├── /business/request-quote├── /sustainability├── /about└── /contact
+Navigation desktop: Story • Materials • Collection • Trace • For Business • About. Khu vực hành động bên phải: Search • Wishlist • Bag • Menu. Navbar bắt đầu transparent; sau scroll chuyển sang nền cream/glass rất nhẹ.
+4. HOME PAGE REQUIREMENTS
+4.1. Cinematic Hero
+Chiếm gần full viewport; ưu tiên video nhẹ, image sequence, layered parallax hoặc canvas animation.
+Hiển thị logo SENPINE và headline gợi ý: “FROM VIETNAMESE NATURE TO THE FUTURE OF TEXTILES”.
+Subline: “Tơ sen × Sợi lá dứa × Thời trang bền vững”.
+CTA: Explore the Story / Discover Materials.
+Texture vải hoặc các chi tiết thực vật có thể phản hồi nhẹ theo con trỏ trên desktop.
+4.2. Interactive Origin – Lotus × Pineapple
+Màn hình chia hai vùng: LOTUS và PINEAPPLE. Hover/click mở rộng hình ảnh, thay đổi background và làm nổi câu chuyện vật liệu. Các đường fiber animation từ hai phía hội tụ vào giữa để hình thành SenPine.
+LOTUS        PINEAPPLE   \          /    \        /       SENPINE
+4.3. Fiber Journey
+Scroll storytelling theo 7 bước. Một “fiber line” mảnh chạy xuyên suốt và tiến triển theo scroll:
+Bước
+Tên
+Nội dung trực quan
+01
+HARVEST
+Nông hộ / nguyên liệu tự nhiên
+02
+EXTRACTION
+Tách xơ
+03
+FIBER
+Xơ thô
+04
+YARN
+Kéo sợi
+05
+FABRIC
+Dệt vải
+06
+DESIGN
+Thiết kế
+07
+FASHION
+Sản phẩm hoàn chỉnh
+
+4.4. Material Lab
+Không gọi section là “Sản phẩm”. Dùng tên MATERIAL LAB và trình bày ba vật liệu như ba vật thể/texture lớn với tương tác riêng.
+Vật liệu
+Thành phần/định vị
+Giá kế hoạch
+PineFiber
+Vải từ sợi lá dứa; dòng chủ lực, hướng đến khả năng mở rộng.
+500.000 đ/m
+SenPine Blend
+Khoảng 95% sợi lá dứa + 5% tơ sen; phân khúc cao hơn.
+2.000.000 đ/m
+SenSilk
+Vải cao cấp từ tơ sen; giá trị cao, sản lượng giới hạn.
+15.000.000 đ/m
+
+Mỗi card phải có image zoom/texture motion nhẹ, cursor “EXPLORE”, typography animation và link đến trang chi tiết vật liệu.
+4.5. Fabric Comparison
+Tạo một khu so sánh trực quan giữa PineFiber, SenPine Blend và SenSilk. Có thể dùng draggable slider/horizontal control để chuyển texture và định vị cảm giác “Natural → Premium” hoặc “Pineapple → Lotus”. Đây là mô phỏng trải nghiệm, không phải thông số đo lường khoa học.
+4.6. Fashion Showroom
+Section chuyển từ vật liệu sang sản phẩm bằng hiệu ứng Fabric → Fashion. Sau transition, hiển thị gallery dạng horizontal scroll hoặc draggable showroom trên desktop; mobile chuyển thành vertical card stack.
+Sản phẩm B2C
+Giá kế hoạch
+Áo SenPine
+760.000 đ/sản phẩm
+Váy/Đầm SenPine
+1.400.000 đ/sản phẩm
+Khăn SenPine
+410.000 đ/sản phẩm
+Túi SenPine
+330.000 đ/sản phẩm
+Nón SenPine
+290.000 đ/sản phẩm
+Ví SenPine
+260.000 đ/sản phẩm
+
+Bắt buộc — Mọi nơi hiển thị giá phải có nhãn/tooltip phù hợp: “Giá kế hoạch phục vụ bản mô phỏng dự án SenPine; không phải giá giao dịch thực tế”.
+
+5. MATERIAL DETAIL REQUIREMENTS
+Route: /materials/[slug]. Mỗi trang vật liệu mang cảm giác như một “material dossier” cao cấp, không phải product card phóng to.
+Khối nội dung
+Yêu cầu
+Hero
+Tên vật liệu + tagline + ảnh macro full-bleed.
+Material facts
+Origin, category, composition (nếu có căn cứ), application.
+Story
+Nguồn nguyên liệu và vai trò trong dự án.
+Texture
+Ảnh cận cảnh / gallery / zoom.
+Production
+Trình bày quy trình ở mức mô tả, không đưa claim kỹ thuật không có nguồn.
+Applications
+Fashion / accessories / textile development.
+B2B CTA
+REQUEST SAMPLE và REQUEST QUOTE; không hiển thị Buy Now cho vật liệu B2B.
+
+6. PRODUCT CATALOG & DETAIL
+6.1. Product catalog
+Route /collection hiển thị 6 sản phẩm B2C. Gallery desktop nên có chuyển động ngang, kéo/thả, hover “VIEW PIECE”, ảnh lớn và khoảng trắng rộng. Tránh grid thương mại điện tử thông thường nếu không cần.
+6.2. Product Detail
+Route /products/[slug]. Bố cục editorial: gallery lớn bên trái/ở trên, thông tin sản phẩm tối giản bên phải. Nội dung tối thiểu: tên, giá kế hoạch, material, mô tả, gallery, lựa chọn size/color demo, Save và Add to Experience Bag.
+ÁO SENPINE760.000 VNDMaterialSenPine bio-based textile[♡ Save]   [ADD TO EXPERIENCE BAG]
+Dữ liệu demo — Size và màu sắc không được xác định trong báo cáo; nếu cần để mô phỏng UX, phải đánh dấu rõ trong code/content là demo variant, không coi là dữ liệu chính thức.
+
+7. SIMULATED COMMERCE EXPERIENCE
+7.1. Experience Bag
+Nút Add to Experience Bag hoạt động trên Product Detail.
+Bag drawer mở từ bên phải, hiển thị thumbnail, tên, giá kế hoạch, số lượng, subtotal.
+Cho phép tăng/giảm quantity, remove và clear bag.
+State lưu bằng localStorage để refresh không mất dữ liệu.
+CTA chính: CONTINUE EXPERIENCE, không dùng PAY hoặc BUY NOW.
+7.2. Checkout Simulation
+Route /experience/checkout. Flow đề xuất: Bag → Information → Delivery → Review → Complete. Cho phép nhập Name, Phone, Email, Address ở mức demo. Không yêu cầu thông tin thẻ, ngân hàng, ví điện tử hoặc dữ liệu tài chính.
+Bag ↓Information ↓Delivery ↓Review ↓Complete
+7.3. Complete Experience
+Khi người dùng xác nhận, không tạo order thật. Chỉ sinh demo code phía client, ví dụ DEMO-SP-2026-0042, và hiển thị rõ:
+THANK YOUThis was a simulated SenPine shopping experience.No payment has been made.No real order has been created.
+Privacy — Không lưu dữ liệu nhạy cảm. Nếu form được lưu để demo kỹ thuật, chỉ lưu dữ liệu tối thiểu và phải có nhãn “demo”.
+
+8. WISHLIST & SEARCH
+8.1. Wishlist
+Wishlist hoạt động không cần account. Lưu slug/id sản phẩm bằng localStorage. Route /saved hiển thị sản phẩm đã lưu và cho phép xóa nhanh.
+8.2. Search overlay
+Nhấn Search mở overlay gần full-screen với input lớn “WHAT ARE YOU LOOKING FOR?”. Search realtime client-side trên materials + products + story keywords. Ví dụ từ khóa: PineFiber, SenSilk, Dress, Bag, Lotus, Pineapple.
+9. TRACEABILITY / PRODUCT PASSPORT
+9.1. Trace landing
+Route /trace hiển thị input “TRACE YOUR SENPINE PIECE”. Seed một số mã demo: SP-PF-001, SP-SB-001, SP-SS-001.
+9.2. Trace result
+Route /trace/[code]. Hiển thị Product Passport với trace code, material, composition nếu có, origin ở mức dự án và timeline sản xuất mô phỏng.
+FARM  ↓FIBER  ↓YARN  ↓FABRIC  ↓DESIGN  ↓PRODUCT
+Bắt buộc — Toàn bộ batch/trace record trong MVP phải có nhãn DEMO TRACE DATA. Không trình bày dữ liệu mô phỏng như dữ liệu truy xuất thực tế.
+
+Product Detail có CTA VIEW PRODUCT PASSPORT và/hoặc QR Code dẫn tới /trace/[code]. QR có thể generate client-side, không cần backend.
+10. B2B EXPERIENCE
+10.1. For Business
+Route /business có visual language chuyên nghiệp hơn showroom B2C nhưng vẫn giữ hệ nhận diện. Headline gợi ý: “MATERIALS FOR DESIGNERS, BRANDS & MAKERS”. Giới thiệu ba vật liệu và các hướng hợp tác.
+10.2. Material Sample Kit
+Section SENPINE MATERIAL KIT gồm PineFiber, SenPine Blend và SenSilk. CTA REQUEST A SAMPLE. Có thể mô phỏng bằng form validate + success state; không bắt buộc gửi email thật.
+10.3. Request Quote
+Field
+Yêu cầu
+Company Name
+Bắt buộc
+Contact Person
+Bắt buộc
+Email
+Bắt buộc, validate format
+Phone
+Tùy chọn hoặc bắt buộc theo quyết định UI
+Interested Material
+PineFiber / SenPine Blend / SenSilk / Custom
+Estimated Quantity
+Text/number
+Purpose
+Fashion Collection / Accessories / Research / Manufacturing / Other
+Message
+Textarea
+
+Sau submit: hiển thị REQUEST RECEIVED — DEMO. Không bắt buộc backend/email service ở MVP.
+11. STORY / ABOUT / SUSTAINABILITY / CONTACT
+11.1. Story
+Route /story kể chuyện bằng text ngắn + ảnh lớn. Không bê nguyên nội dung báo cáo. Flow gợi ý: Vietnamese Agriculture → Unused Potential → Lotus + Pineapple → Fiber Innovation → SenPine → Sustainable Fashion.
+11.2. About
+Route /about gồm Who We Are, Our Vision, Our Material Philosophy, Our Process và Our Future. Nội dung truyền thông phải súc tích, tránh copy dài từ báo cáo.
+11.3. Sustainability
+Route /sustainability trình bày định hướng material innovation, nguồn nguyên liệu nông nghiệp và traceable story. Không được tự thêm claim như “100% carbon neutral”, “zero environmental impact”, “100% biodegradable” nếu chưa có căn cứ.
+11.4. Contact
+Contact page đơn giản nhưng đúng brand: contact form, thông tin liên hệ demo và liên kết social. Nếu chưa có địa chỉ/email chính thức, phải ghi rõ dữ liệu demo hoặc placeholder nội bộ, không giả mạo thông tin doanh nghiệp đã hoạt động.
+12. MOTION & MICROINTERACTIONS
+Interaction
+Yêu cầu
+Smooth scrolling
+Có thể dùng Lenis; tắt/giảm khi prefers-reduced-motion.
+Text reveal
+Stagger hoặc mask reveal vừa phải.
+Parallax
+Nhẹ, ưu tiên hình ảnh lớn.
+Horizontal scroll
+Chỉ dùng nơi có mục đích: Fashion Showroom/Material Gallery.
+Custom cursor
+Desktop: VIEW / DRAG / EXPLORE theo context; mobile tắt.
+Magnetic button
+Dùng có chọn lọc ở CTA chính.
+Page transition
+400–700ms; logo/text SenPine + mask reveal.
+Loader
+Logo/sợi được “dệt” trong 1–1,5 giây tối đa khi cần.
+Image hover
+Zoom/clip-path/texture subtle; không lạm dụng tilt.
+
+Nguyên tắc motion — Premium — not chaotic. Không animation mọi phần tử, không tạo motion chỉ để “khoe kỹ thuật”.
+
+13. RESPONSIVE & ACCESSIBILITY
+Breakpoint
+Yêu cầu
+360px+
+Mobile base; chuyển horizontal experience thành vertical; bỏ custom cursor.
+768px+
+Tablet; giảm mức parallax/animation nếu cần.
+1024px+
+Laptop; bật đầy đủ tương tác desktop.
+1440px+
+Desktop chuẩn.
+1920px
+Giữ max-width hợp lý, tránh text quá dài/ảnh vỡ bố cục.
+
+Hỗ trợ prefers-reduced-motion: giảm/tắt parallax, mouse tracking, animation liên tục và page transition mạnh.
+Keyboard navigation đầy đủ; focus state rõ ràng.
+Semantic HTML, aria-label cho icon-only button, alt text cho ảnh.
+Đảm bảo contrast đọc được, đặc biệt text trên ảnh/video.
+Không tạo horizontal overflow ngoài section cố ý.
+14. TECH STACK
+Layer
+Khuyến nghị
+Framework
+Next.js (App Router)
+Language
+TypeScript
+Styling
+Tailwind CSS
+Motion
+GSAP + ScrollTrigger
+Component motion
+Framer Motion/Motion nếu thực sự cần
+Smooth scroll
+Lenis
+Icons
+Lucide
+Image
+next/image
+3D optional
+React Three Fiber / Three.js chỉ cho một điểm nhấn, có fallback
+State
+Zustand hoặc Context API
+Persistence
+localStorage
+Hosting
+Vercel
+
+Ưu tiên kỹ thuật — UX > Performance > 3D gimmick. Nếu WebGL/3D làm giảm FPS hoặc tăng complexity quá mức, thay bằng CSS/GSAP.
+
+15. DATA & CONTENT ARCHITECTURE
+15.1. Data files
+/data/products.ts/data/materials.ts/data/trace.ts/data/content.ts
+15.2. Product type gợi ý
+type Product = {  id: string  slug: string  name: string  category: string  price: number  unit: "item" | "meter"  images: string[]  description: string  material?: string  demo: boolean}
+15.3. Seed data bắt buộc
+Loại
+Slug tối thiểu
+Materials
+pinefiber; senpine-blend; sensilk
+Products
+senpine-shirt; senpine-dress; senpine-scarf; senpine-bag; senpine-hat; senpine-wallet
+Trace demo
+SP-PF-001; SP-SB-001; SP-SS-001
+
+15.4. Bilingual-ready
+Version đầu có thể dùng tiếng Việt, nhưng không hard-code text rải rác trong component. Content nên gom theo data/config để sẵn sàng thêm VI/EN về sau. Không bắt buộc triển khai i18n đầy đủ ở MVP.
+16. SEO, PERFORMANCE & QUALITY
+16.1. SEO
+Mỗi route có title và description riêng.
+OpenGraph image/metadata cho Home, Materials và Product Detail.
+Product/material slug thân thiện, metadata lấy từ data file.
+16.2. Performance
+Lazy-load section nặng và video.
+Dùng next/image + responsive sizes.
+Nén ảnh/video; không autoplay video 4K.
+Dynamic import cho WebGL/animation nặng.
+Giảm animation trên mobile và thiết bị yếu.
+Không để animation làm blocking main thread kéo dài.
+16.3. Build quality
+TypeScript không có lỗi.
+Không có console error nghiêm trọng.
+npm run build thành công.
+Không có link chết hoặc route 404 ngoài chủ ý.
+Các form demo validate và có trạng thái loading/success/error hợp lý.
+17. ASSET REQUIREMENTS
+/public/images/hero/public/images/materials/public/images/products/public/images/process/public/images/story
+Trong lúc phát triển có thể dùng placeholder local chất lượng cao, nhưng không dùng placeholder URL lỗi thời. Ảnh cuối cần thống nhất mood, tỷ lệ và màu sắc để giữ cảm giác editorial/premium.
+18. NHỮNG ĐIỀU KHÔNG ĐƯỢC LÀM
+Không biến website thành dashboard hoặc layout SaaS.
+Không dùng card bo tròn ở mọi nơi.
+Không lạm dụng glassmorphism, gradient tím/xanh kiểu AI hoặc emoji làm UI chính.
+Không làm homepage thành chuỗi section giống template ThemeForest.
+Không chạy quá nhiều animation đồng thời.
+Không tạo payment thật, order thật, shipping thật.
+Không giả vờ giao dịch mô phỏng là giao dịch thật.
+Không tự tạo chứng nhận môi trường, số liệu carbon hoặc tuyên bố kỹ thuật không có nguồn.
+Không tự coi size/color demo là thông tin sản phẩm chính thức.
+19. PRIORITY & IMPLEMENTATION PHASES
+Phase / Priority
+Nội dung
+P0 – Foundation
+Next.js setup, design tokens, typography, layout shell, responsive navbar, footer, data structure.
+P0 – Brand Experience
+Cinematic Home, Interactive Origin, Fiber Journey, Material Lab, Fabric → Fashion transition.
+P0 – Catalog
+Collection, Product Detail, Material Detail.
+P0 – Demo Commerce
+Experience Bag, localStorage, Checkout Simulation, Complete Experience.
+P1 – Trace
+Trace landing, Product Passport, QR demo.
+P1 – B2B
+Business page, Sample Kit, Quote/Sample forms.
+P1 – Utility
+Wishlist, Search overlay.
+P2 – Enhancement
+3D hero accent, advanced page transitions, deeper microinteractions.
+
+19.1. Cách giao việc cho Codex
+Không yêu cầu Codex “code toàn bộ website” trong một prompt. Nên triển khai theo phase, yêu cầu build chạy sau mỗi phase và kiểm tra responsive/console trước khi chuyển sang phase tiếp theo.
+Phase 1: Setup + Design System + Navbar/Footer + Home skeletonPhase 2: Cinematic/Scroll interactionsPhase 3: Materials + Collection + Product DetailPhase 4: Bag + Checkout SimulationPhase 5: Trace + B2B formsPhase 6: Search/Wishlist + Performance + Polish
+20. ACCEPTANCE CRITERIA / DEFINITION OF DONE
+☐ Website không mang cảm giác template doanh nghiệp thông thường.
+☐ Home có ít nhất một trải nghiệm scroll-driven rõ ràng và ba wow moments được thể hiện hợp lý.
+☐ Người dùng hiểu được Lotus + Pineapple → Fiber → Fabric → Fashion.
+☐ Có đủ 3 dòng vật liệu và 6 sản phẩm B2C.
+☐ Giá hiển thị đúng theo mức giá kế hoạch của dự án và có disclaimer.
+☐ Material Detail và Product Detail hoạt động đúng route.
+☐ Add to Experience Bag, quantity, remove, clear bag và persistence hoạt động.
+☐ Checkout mô phỏng hoạt động từ đầu đến Complete.
+☐ Không tích hợp payment thật và không tạo order thật.
+☐ Complete screen thông báo rõ đây là mô phỏng.
+☐ Wishlist hoạt động bằng localStorage.
+☐ Search overlay trả kết quả realtime từ data local.
+☐ Trace code demo hoạt động và hiển thị DEMO TRACE DATA.
+☐ B2B Request Quote/Request Sample validate và hiển thị success state demo.
+☐ Responsive tốt từ 360px đến desktop lớn.
+☐ prefers-reduced-motion được hỗ trợ.
+☐ Không có horizontal overflow ngoài khu vực cố ý.
+☐ Không có console error nghiêm trọng.
+☐ TypeScript clean và npm run build thành công.
+21. CONTENT SOURCE & DATA DISCLAIMER
+Các mức giá và danh mục trong tài liệu này được lấy từ kế hoạch dự án SenPine trong báo cáo môn học. Chúng được dùng để mô phỏng UI/UX và mô hình kinh doanh của website, không được trình bày như giá bán hoặc doanh thu thực tế đã phát sinh.
+Những thành phần UX như size, color, checkout address, trace batch, QR passport, order code và form success state là dữ liệu/luồng mô phỏng nhằm minh họa trải nghiệm. Khi chuyển sang hệ thống thật, các dữ liệu đó phải được xác minh, thiết kế lại quy trình nghiệp vụ và bổ sung backend phù hợp.
+22. KẾT LUẬN ĐỊNH HƯỚNG
+SenPine website nên được triển khai như một trải nghiệm thương hiệu tương tác thay vì một website giới thiệu tĩnh. Trọng tâm không nằm ở số lượng chức năng mà ở việc kết nối câu chuyện vật liệu, hình ảnh thời trang, tương tác cuộn và các mô phỏng thương mại thành một hành trình thống nhất. Kết quả cuối cần khiến người xem cảm nhận được “SenPine” trước khi họ đọc hết mọi thông tin.

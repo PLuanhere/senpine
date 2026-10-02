@@ -1,0 +1,22 @@
+# dependencies
+/node_modules
+/.pnpm-store/
+/.artifacts/
+
+# Next.js output
+/.next/
+/out/
+
+# environment and local files
+.env*
+!.env.example
+*.log
+.DS_Store
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+
+Details.docx
+Requirements.docx

@@ -1,0 +1,18 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import { ArrowUpRight, Check, Minus, Plus, ShoppingBag, X } from "lucide-react";
+import { ProductArtwork } from "@/components/product-artwork";
+import { currency, products } from "@/lib/content";
+import { useCart } from "@/lib/store";
+
+export function CheckoutView() {
+  const { cart, update, clear } = useCart();
+  const [complete, setComplete] = useState(false);
+  const entries = Object.entries(cart).map(([id, quantity]) => ({ product: products[Number(id)], quantity }));
+  const total = entries.reduce((sum, entry) => sum + entry.product.price * entry.quantity, 0);
+  if (complete) return <section className="page-section checkout-success" role="status"><Check size={51} strokeWidth={1.3} /><h2>Đã hoàn tất trải nghiệm.</h2><p>Thông tin đã được kiểm tra trong trình duyệt. Không có đơn hàng, thanh toán hay thông tin giao hàng nào được gửi tới SenPine.</p><div><button className="button button-dark" onClick={() => { clear(); setComplete(false); }}>Làm mới giỏ demo</button><Link className="text-link" href="/collection">Xem lại bộ sưu tập <ArrowUpRight size={20} /></Link></div></section>;
+  if (entries.length === 0) return <section className="page-section empty-editorial"><ShoppingBag size={45} strokeWidth={1.3} /><h2>Giỏ trải nghiệm đang trống.</h2><p>Chọn một thiết kế concept để xem luồng đặt hàng demo.</p><Link className="button button-dark" href="/collection">Khám phá bộ sưu tập <ArrowUpRight size={20} /></Link></section>;
+  return <section className="page-section checkout-layout"><div><div className="checkout-section-head"><h2>Thiết kế đã chọn.</h2><button className="text-link" onClick={clear}>Xóa giỏ <X size={19} /></button></div><div className="checkout-items">{entries.map(({ product, quantity }) => <article key={product.id}><Link href={`/products/${product.slug}`} aria-label={`Xem ${product.name}`}><ProductArtwork id={product.id} /></Link><div><Link href={`/products/${product.slug}`}><h3>{product.name}</h3></Link><p>Concept · {product.color}</p><strong>{currency(product.price)} / sản phẩm · dự kiến</strong><div className="quantity-control"><button onClick={() => update(product.id, quantity - 1)} aria-label={`Giảm số lượng ${product.name}`}><Minus size={17} /></button><span aria-live="polite">{quantity}</span><button onClick={() => update(product.id, quantity + 1)} aria-label={`Tăng số lượng ${product.name}`}><Plus size={17} /></button></div></div><button className="item-remove" onClick={() => update(product.id, 0)} aria-label={`Bỏ ${product.name} khỏi giỏ`}><X size={20} /></button></article>)}</div></div><div className="checkout-summary"><p className="eyebrow">TỔNG HỢP BẢN DEMO</p><div className="summary-line"><span>{entries.reduce((sum, entry) => sum + entry.quantity, 0)} thiết kế</span><strong>{currency(total)}</strong></div><p className="page-note">Giá trong kế hoạch đề tài. Chưa tính vận chuyển và chưa phải báo giá hay đơn hàng thực tế.</p><form onSubmit={(event) => { event.preventDefault(); setComplete(true); }}><h3>Thông tin minh họa</h3><label className="form-label">Họ tên *<input name="name" autoComplete="name" required maxLength={100} placeholder="Tên của bạn" /></label><label className="form-label">Email *<input name="email" type="email" autoComplete="email" required maxLength={150} placeholder="you@example.com" /></label><label className="form-label">Tỉnh / thành phố *<input name="city" autoComplete="address-level1" required maxLength={100} placeholder="Nơi bạn sinh sống" /></label><button className="button button-dark" type="submit">Hoàn tất trải nghiệm demo <ArrowUpRight size={20} /></button></form><p className="page-note">Không lưu hoặc gửi thông tin biểu mẫu. Không xử lý thanh toán.</p></div></section>;
+}
