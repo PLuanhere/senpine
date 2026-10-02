@@ -8,11 +8,13 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { CollectionArtwork } from "@/components/collection-artwork";
 import { aboutMaterials, aboutProcess, aboutProductNotes, aboutRoadmap, aboutValues } from "@/lib/about-content";
-import { corporateInfo, products } from "@/lib/content";
+import { corporateInfo, materials, products } from "@/lib/content";
 import { detailsImages, productImages } from "@/lib/imagery";
 import { useLanguage } from "@/lib/language-context";
 import { useMotion } from "@/lib/motion-context";
 import { useSaved } from "@/lib/store";
+import { EditorialDialog } from "@/components/editorial-dialog";
+import { MaterialQuickView } from "@/components/material-quick-view";
 
 function ChoiceTabs({ labels, selected, onSelect, label, id }: { labels: readonly string[]; selected: number; onSelect: (index: number) => void; label: string; id: string }) {
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
@@ -43,6 +45,7 @@ export function AboutExperience() {
   const [process, setProcess] = useState(0);
   const [phase, setPhase] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState<number | null>(null);
+  const [selectedMaterialId, setSelectedMaterialId] = useState<string | null>(null);
   const [productView, setProductView] = useState(0);
   const [zoom, setZoom] = useState(1);
   const { lang } = useLanguage();
@@ -52,6 +55,7 @@ export function AboutExperience() {
   const moving = enabled && !reduced;
   const text = (vietnamese: string, english: string) => vi ? vietnamese : english;
   const currentMaterial = aboutMaterials[material];
+  const currentMaterialObj = materials.find((m) => m.id === (selectedMaterialId || currentMaterial.id));
   const currentPhase = aboutRoadmap[phase];
   const product = products[selectedProduct ?? 0];
   const materialTabId = `${uid}-material`;
@@ -114,10 +118,20 @@ export function AboutExperience() {
   useEffect(() => {
     const modal = dialog.current;
     if (selectedProduct === null || !modal) return;
-    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     if (!modal.open) modal.showModal();
-    return () => { document.body.style.overflow = previousOverflow; };
+    const handleClose = () => {
+      document.body.style.overflow = "";
+      setSelectedProduct(null);
+      returnFocus.current?.focus({ preventScroll: true });
+    };
+    modal.addEventListener("close", handleClose);
+    modal.addEventListener("cancel", handleClose);
+    return () => {
+      modal.removeEventListener("close", handleClose);
+      modal.removeEventListener("cancel", handleClose);
+      document.body.style.overflow = "";
+    };
   }, [selectedProduct]);
 
   function openProduct(id: number) {
@@ -192,7 +206,46 @@ export function AboutExperience() {
     <section id="about-materials" className="ab-materials ab-section" aria-labelledby="ab-material-title">
       <div className="ab-section-heading ab-reveal"><div><p className="ab-eyebrow">03 / {text("TRIẾT LÝ VẬT LIỆU", "MATERIAL PHILOSOPHY")}</p><h2 id="ab-material-title">{text("Hiểu sợi.", "Know the fibre.")} <em>{text("Rồi mới thiết kế.", "Then design.")}</em></h2></div><p>{text("Ba hướng phát triển, cùng một điểm bắt đầu: hiểu nguồn nguyên liệu trước khi quyết định nó sẽ trở thành điều gì.", "Three directions, one starting point: understand the source before deciding what it might become.")}</p></div>
       <ChoiceTabs id={materialTabId} labels={aboutMaterials.map((entry) => entry.name)} selected={material} onSelect={setMaterial} label={text("Chọn hướng vật liệu", "Select a material direction")} />
-      <div id={`${materialTabId}-panel`} role="tabpanel" aria-labelledby={`${materialTabId}-tab-${material}`} tabIndex={0} className="ab-material-panel"><div className="ab-material-image" key={currentMaterial.id}><Image src={currentMaterial.image.src} alt={currentMaterial.image.alt} fill sizes="(max-width: 800px) 90vw, 48vw" /><span>0{material + 1} / {currentMaterial.name}</span></div><div className="ab-material-description" key={`copy-${material}`}><p className="ab-eyebrow">{currentMaterial[lang].origin}</p><h3>{currentMaterial[lang].title}</h3><p>{currentMaterial[lang].text}</p><dl><div><dt>{text("Thành phần định hướng", "Intended composition")}</dt><dd>{currentMaterial[lang].composition}</dd></div><div><dt>{text("Ứng dụng đề xuất", "Proposed applications")}</dt><dd>{currentMaterial[lang].use}</dd></div></dl><Link href={`/materials/${currentMaterial.id}`} className="ab-text-link">{text("Mở hồ sơ", "Open profile")} {currentMaterial.name}<ArrowUpRight size={17} /></Link></div></div>
+      <div id={`${materialTabId}-panel`} role="tabpanel" aria-labelledby={`${materialTabId}-tab-${material}`} tabIndex={0} className="ab-material-panel">
+        <div
+          className="ab-material-image"
+          key={currentMaterial.id}
+          onClick={() => setSelectedMaterialId(currentMaterial.id)}
+          style={{ cursor: "pointer" }}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setSelectedMaterialId(currentMaterial.id); }}
+          aria-label={`${text("Xem nhanh hồ sơ", "Quick view dossier")} ${currentMaterial.name}`}
+        >
+          <Image src={currentMaterial.image.src} alt={currentMaterial.image.alt} fill sizes="(max-width: 800px) 90vw, 48vw" />
+          <span>0{material + 1} / {currentMaterial.name}</span>
+          <span className="ab-quick-hint" style={{ opacity: 1, top: 14, right: 14, bottom: "auto", left: "auto" }}>
+            <Maximize2 size={13} /> {text("Xem nhanh", "Quick view")}
+          </span>
+        </div>
+        <div className="ab-material-description" key={`copy-${material}`}>
+          <p className="ab-eyebrow">{currentMaterial[lang].origin}</p>
+          <h3>{currentMaterial[lang].title}</h3>
+          <p>{currentMaterial[lang].text}</p>
+          <dl>
+            <div><dt>{text("Thành phần định hướng", "Intended composition")}</dt><dd>{currentMaterial[lang].composition}</dd></div>
+            <div><dt>{text("Ứng dụng đề xuất", "Proposed applications")}</dt><dd>{currentMaterial[lang].use}</dd></div>
+          </dl>
+          <div style={{ display: "flex", gap: "16px", alignItems: "center", flexWrap: "wrap", marginTop: "16px" }}>
+            <button
+              type="button"
+              className="ab-button"
+              style={{ padding: "12px 18px", display: "inline-flex", alignItems: "center", gap: "8px" }}
+              onClick={() => setSelectedMaterialId(currentMaterial.id)}
+            >
+              <Maximize2 size={15} /> {text("Xem nhanh hồ sơ", "Quick view dossier")}
+            </button>
+            <Link href={`/materials/${currentMaterial.id}`} className="ab-text-link">
+              {text("Mở hồ sơ", "Open profile")} {currentMaterial.name}<ArrowUpRight size={17} />
+            </Link>
+          </div>
+        </div>
+      </div>
       <p className="ab-note">{text("Ảnh và thông tin thể hiện định hướng đề án. Thành phần, chất lượng và hiệu năng cần được xác nhận bằng mẫu thử và dữ liệu kiểm nghiệm.", "Images and information represent project directions. Composition, quality and performance require physical samples and validated test data.")}</p>
     </section>
 
@@ -219,9 +272,28 @@ export function AboutExperience() {
 
     <section className="ab-connect" aria-labelledby="ab-connect-title"><Threads /><div className="ab-connect-copy ab-reveal"><p className="ab-eyebrow">{text("CÙNG VIẾT TIẾP CÂU CHUYỆN", "WRITE THE NEXT CHAPTER TOGETHER")}</p><h2 id="ab-connect-title">{text("Một kết nối mới.", "A new connection.")}<br /><em>{text("Một khả năng mới.", "A new possibility.")}</em></h2><p>{text("Bạn là nhà thiết kế, thương hiệu hay người quan tâm đến vật liệu thực vật? Khám phá hướng hợp tác hoặc bắt đầu bằng một cuộc trò chuyện.", "Are you a designer, a brand or curious about botanical textiles? Explore a partnership direction or start a conversation.")}</p><div><Link href="/business/request-sample" className="ab-button ab-button-light">{text("Tìm hiểu bộ mẫu", "Explore sample sets")}<ArrowUpRight size={17} /></Link><Link href="/contact" className="ab-text-link">{text("Kết nối với SenPine", "Connect with SenPine")}<ArrowUpRight size={17} /></Link></div></div><div className="ab-connect-mark" aria-hidden="true"><Sprout size={75} strokeWidth={.8} /><span>SenPine<span>.</span></span><small>FROM NATURE. WITH PURPOSE.</small></div></section>
 
-    <dialog ref={dialog} className="ab-product-dialog" aria-labelledby={`${uid}-product-title`} onClose={() => { setSelectedProduct(null); returnFocus.current?.focus({ preventScroll: true }); }} onClick={(event) => { if (event.target !== event.currentTarget) return; const bounds = event.currentTarget.getBoundingClientRect(); if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) event.currentTarget.close(); }}>
+    <dialog ref={dialog} className="ab-product-dialog" aria-labelledby={`${uid}-product-title`} onClose={() => { setSelectedProduct(null); document.body.style.overflow = ""; returnFocus.current?.focus({ preventScroll: true }); }} onClick={(event) => { if (event.target !== event.currentTarget) return; const bounds = event.currentTarget.getBoundingClientRect(); if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) event.currentTarget.close(); }}>
       <button type="button" className="ab-dialog-close" onClick={() => dialog.current?.close()} aria-label={text("Đóng xem nhanh", "Close quick view")} autoFocus><X size={21} /></button>
       <div className="ab-dialog-layout"><div className="ab-dialog-visual"><ChoiceTabs id={viewTabId} labels={[text("Phom thiết kế", "Design silhouette"), text("Ảnh tham khảo", "Reference image")]} selected={productView} onSelect={(index) => { setProductView(index); setZoom(1); }} label={text("Góc nhìn thiết kế", "Design views")} /><div id={`${viewTabId}-panel`} role="tabpanel" aria-labelledby={`${viewTabId}-tab-${productView}`} tabIndex={0} className="ab-dialog-art"><div style={{ transform: `scale(${zoom})` }}>{productView === 0 ? <CollectionArtwork id={product.id} className="ab-dialog-object" /> : <Image src={productImages[product.id].src} alt={productImages[product.id].alt} fill sizes="(max-width: 800px) 90vw, 460px" />}</div></div><div className="ab-dialog-zoom"><button type="button" onClick={() => setZoom((value) => Math.max(1, value - .25))} disabled={zoom === 1} aria-label={text("Thu nhỏ thiết kế", "Zoom out design")}><Minus size={15} /></button><label htmlFor={`${uid}-zoom`}>{text("Phóng đại", "Magnification")}</label><input id={`${uid}-zoom`} type="range" min="1" max="2" step=".05" value={zoom} onChange={(event) => setZoom(Number(event.target.value))} aria-valuetext={`${zoom.toFixed(2)}×`} /><span>{zoom.toFixed(1)}×</span><button type="button" onClick={() => setZoom((value) => Math.min(2, value + .25))} disabled={zoom === 2} aria-label={text("Phóng lớn thiết kế", "Zoom in design")}><Plus size={15} /></button></div></div><div className="ab-dialog-copy"><p className="ab-eyebrow">DESIGN STUDY / 0{product.id + 1}</p><h2 id={`${uid}-product-title`}>{vi ? product.name : product.english}</h2><p>{aboutProductNotes[product.id][lang]}</p><dl><div><dt>{text("Vật liệu đề xuất", "Proposed material")}</dt><dd>{vi ? product.materialUsed : product.materialUsedEn}</dd></div><div><dt>{text("Sắc màu định hướng", "Intended colour")}</dt><dd>{vi ? product.color : product.colorEn}</dd></div><div><dt>{text("Giá kế hoạch", "Planned price")}</dt><dd>{formatPrice(product.price)}</dd></div></dl><button type="button" className="ab-dialog-save" aria-pressed={saved.includes(product.id)} onClick={() => toggle(product.id)}><Heart size={17} fill={saved.includes(product.id) ? "currentColor" : "none"} />{saved.includes(product.id) ? text("Đã lưu thiết kế", "Design saved") : text("Lưu thiết kế", "Save design")}</button><Link href={`/products/${product.slug}`} className="ab-button" onClick={() => dialog.current?.close()}>{text("Mở hồ sơ sản phẩm", "Open product profile")}<ArrowUpRight size={17} /></Link><p className="ab-note">{text("Thiết kế concept, chưa mở bán. Ảnh tham khảo minh họa nhóm sản phẩm trong đề án, không phải ảnh sản phẩm SenPine đã sản xuất.", "Concept design, not available for sale. Reference images illustrate product families in the project, not manufactured SenPine inventory.")}</p></div></div>
     </dialog>
+
+    {/* Material Dossier Quick Dialog for About Page */}
+    <EditorialDialog
+      isOpen={selectedMaterialId !== null}
+      onClose={() => setSelectedMaterialId(null)}
+      className="modal-material"
+    >
+      {currentMaterialObj && (
+        <MaterialQuickView
+          material={currentMaterialObj}
+          lang={lang}
+          onRequestSample={() => {
+            setSelectedMaterialId(null);
+            window.location.href = "/business/request-sample";
+          }}
+          onNavigate={() => setSelectedMaterialId(null)}
+        />
+      )}
+    </EditorialDialog>
   </main>;
 }

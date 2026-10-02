@@ -29,6 +29,10 @@ import { useMotion } from "@/lib/motion-context";
 import { MotionRibbon } from "@/components/motion-ribbon";
 import { ProductArtwork } from "@/components/product-artwork";
 import { detailsImages, materialImages } from "@/lib/imagery";
+import { MaterialQuickView } from "@/components/material-quick-view";
+import { ProductQuickView } from "@/components/product-quick-view";
+import { SearchDialogContent } from "@/components/search-dialog-content";
+import { SavedDialogContent } from "@/components/saved-dialog-content";
 
 type Overlay =
   | { kind: "search" }
@@ -346,19 +350,21 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!menuOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") setMenuOpen(false);
     };
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = previous;
+      document.removeEventListener("keydown", onKey);
+    };
   }, [menuOpen]);
 
   const selectedProduct = overlay?.kind === "product" ? products[overlay.id] : null;
   const selectedMaterial = overlay?.kind === "material" ? materials.find((item) => item.id === overlay.id) : null;
   const tracedMaterial = materials.find((item) => item.code === traceCode);
-  const matches = products.filter((product) =>
-    normalizeSearch(`${product.name} ${product.english}`).includes(normalizeSearch(query))
-  );
 
   const displayedProducts =
     activeCategory === "All"
@@ -391,10 +397,32 @@ export default function HomePage() {
         </nav>
 
         <div className="header-tools">
+          {/* Desktop Language toggle pill */}
+          <button
+            className="lang-toggle-pill desktop-only-tool"
+            onClick={toggleLang}
+            aria-label={lang === "vi" ? "Chuyển sang tiếng Anh" : "Switch to Vietnamese"}
+            title={lang === "vi" ? "English" : "Tiếng Việt"}
+          >
+            <span className={lang === "vi" ? "active-lang" : ""}>VI</span>
+            <span className="lang-sep">/</span>
+            <span className={lang === "en" ? "active-lang" : ""}>EN</span>
+          </button>
+
+          {/* Desktop Theme toggle button */}
+          <button
+            className="icon-button theme-toggle-btn desktop-only-tool"
+            onClick={toggleTheme}
+            aria-label={theme === "light" ? "Giao diện tối" : "Giao diện sáng"}
+            title={theme === "light" ? (lang === "vi" ? "Giao diện tối" : "Dark theme") : (lang === "vi" ? "Giao diện sáng" : "Light theme")}
+          >
+            {theme === "light" ? <Moon size={18} /> : <Sun size={18} className="theme-sun-icon" />}
+          </button>
+
           <button
             className="icon-button"
             onClick={() => open({ kind: "search" })}
-            aria-label="Tìm sản phẩm"
+            aria-label={lang === "vi" ? "Tìm sản phẩm" : "Search products"}
             title={lang === "vi" ? "Tìm kiếm" : "Search"}
           >
             <Search size={19} strokeWidth={1.5} />
@@ -403,7 +431,11 @@ export default function HomePage() {
           <button
             className="icon-button saved-count"
             onClick={() => open({ kind: "saved" })}
-            aria-label={`Sản phẩm đã lưu (${saved.length})`}
+            aria-label={
+              lang === "vi"
+                ? `Sản phẩm đã lưu (${saved.length})`
+                : `Saved designs (${saved.length})`
+            }
             title={lang === "vi" ? `Đã lưu (${saved.length})` : `Saved (${saved.length})`}
           >
             <Heart size={19} strokeWidth={1.5} />
@@ -444,17 +476,25 @@ export default function HomePage() {
             {menuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
+      </header>
 
-        {menuOpen && (
-          <nav id="mobile-navigation" className="mobile-nav" aria-label="Điều hướng trên điện thoại">
+      {/* Mobile Navigation Drawer - positioned outside header so backdrop-filter does not clip it */}
+      {menuOpen && (
+        <>
+          <div className="mobile-nav-backdrop" onClick={() => setMenuOpen(false)} aria-hidden="true" />
+          <nav
+            id="mobile-navigation"
+            className="mobile-nav"
+            aria-label="Điều hướng trên điện thoại"
+          >
             <div className="mobile-nav-top">
               <span className="eyebrow">{lang === "vi" ? "ĐIỀU HƯỚNG SENPINE" : "SENPINE NAVIGATION"}</span>
               <div className="mobile-tools-bar">
-                <button className="mobile-tool-btn" onClick={toggleTheme}>
+                <button className="mobile-tool-btn" onClick={toggleTheme} aria-label="Đổi giao diện sáng tối">
                   {theme === "light" ? <Moon size={15} /> : <Sun size={15} />}
                   <span>{theme === "light" ? "Giao diện tối" : "Giao diện sáng"}</span>
                 </button>
-                <button className="mobile-tool-btn" onClick={toggleLang}>
+                <button className="mobile-tool-btn" onClick={toggleLang} aria-label="Đổi ngôn ngữ">
                   <span>{lang === "vi" ? "English (EN)" : "Tiếng Việt (VI)"}</span>
                 </button>
               </div>
@@ -486,8 +526,8 @@ export default function HomePage() {
               </p>
             </div>
           </nav>
-        )}
-      </header>
+        </>
+      )}
 
       <main id="main">
         {/* Cinematic Hero */}
@@ -1073,179 +1113,65 @@ export default function HomePage() {
           }}
           aria-labelledby="modal-title"
         >
-          <button className="modal-close icon-button" onClick={() => setOverlay(null)} aria-label="Đóng cửa sổ">
+          <button
+            className="modal-close icon-button"
+            onClick={() => setOverlay(null)}
+            aria-label={lang === "vi" ? "Đóng cửa sổ" : "Close window"}
+          >
             <X size={22} />
           </button>
 
           {/* Search Modal */}
           {overlay.kind === "search" && (
-            <div className="modal-content">
-              <p className="eyebrow">KHÁM PHÁ SENPINE</p>
-              <h2 id="modal-title">Bạn đang tìm <em>điều gì?</em></h2>
-              <label className="search-field">
-                <Search size={22} />
-                <input
-                  type="search"
-                  autoFocus
-                  placeholder="Áo sơ mi, khăn, túi vải…"
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  aria-label="Tìm sản phẩm trong bộ sưu tập"
-                />
-              </label>
-              <p className="home-modal-summary" role="status">{matches.length} thiết kế{query.trim() ? " phù hợp" : " trong bộ sưu tập"}</p>
-              <div className="search-results">
-                {matches.length ? (
-                  matches.map((product) => (
-                    <button key={product.id} className="home-search-result" aria-label={`Xem ${product.name}`} onClick={() => open({ kind: "product", id: product.id })}>
-                      <ProductImage id={product.id} />
-                      <span className="home-result-copy">
-                        <strong>{product.name}</strong>
-                        <small>{product.english}</small>
-                      </span>
-                      <span className="home-result-price">{currency(product.price, lang)}</span>
-                      <ArrowUpRight size={18} aria-hidden="true" />
-                    </button>
-                  ))
-                ) : (
-                  <p className="home-search-empty">Chưa tìm thấy thiết kế phù hợp. Thử tìm “áo”, “váy” hoặc “túi”.</p>
-                )}
-              </div>
-            </div>
+            <SearchDialogContent
+              lang={lang}
+              onSelectProduct={(id) => open({ kind: "product", id })}
+              onSelectMaterial={(id) => open({ kind: "material", id })}
+              onClose={() => setOverlay(null)}
+            />
           )}
 
           {/* Saved Items Modal */}
           {overlay.kind === "saved" && (
-            <div className="modal-content">
-              <p className="eyebrow">YOUR LITTLE EDIT</p>
-              <h2 id="modal-title">Những điều <em>bạn thích.</em></h2>
-              {saved.length ? (
-                <>
-                <p className="home-modal-summary">{saved.length} thiết kế đã lưu trên trình duyệt này</p>
-                <div className="saved-list">
-                  {saved.map((id) => (
-                    <div key={id}>
-                      <button className="home-saved-product" aria-label={`Xem ${products[id].name}`} onClick={() => open({ kind: "product", id })}>
-                        <ProductImage id={id} />
-                        <span className="home-result-copy">
-                          <strong>{products[id].name}</strong>
-                          <small>{currency(products[id].price, lang)} · dự kiến</small>
-                        </span>
-                        <ArrowUpRight size={18} aria-hidden="true" />
-                      </button>
-                      <button
-                        className="icon-button"
-                        onClick={() => toggleSaved(id)}
-                        aria-label={`Bỏ lưu ${products[id].name}`}
-                      >
-                        <X size={18} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <Link href="/saved" className="text-link home-saved-link">Xem tất cả thiết kế đã lưu <ArrowUpRight size={18} /></Link>
-                </>
-              ) : (
-                <div className="empty-state">
-                  <Heart size={35} strokeWidth={1} />
-                  <h3>Chưa có thiết kế đã lưu.</h3>
-                  <p>
-                    Lưu thiết kế bạn thích bằng biểu tượng trái tim.<br />
-                    Danh sách được giữ trên trình duyệt này.
-                  </p>
-                  <button
-                    className="button button-dark"
-                    onClick={() => {
-                      setOverlay(null);
-                      requestAnimationFrame(() => document.getElementById("collection")?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" }));
-                    }}
-                  >
-                    Khám phá bộ sưu tập <ArrowUpRight size={18} />
-                  </button>
-                </div>
-              )}
-            </div>
+            <SavedDialogContent
+              lang={lang}
+              saved={saved}
+              onToggleSaved={toggleSaved}
+              onSelectProduct={(id) => open({ kind: "product", id })}
+              onExploreCollection={() => {
+                setOverlay(null);
+                requestAnimationFrame(() =>
+                  document
+                    .getElementById("collection")
+                    ?.scrollIntoView({
+                      behavior: reducedMotion ? "auto" : "smooth",
+                      block: "start",
+                    })
+                );
+              }}
+              onClose={() => setOverlay(null)}
+            />
           )}
 
           {/* Product Quick View Dialog */}
           {selectedProduct && (
-            <div className="product-dialog">
-              <ProductImage id={selectedProduct.id} large />
-              <div className="product-dialog-copy">
-                <p className="eyebrow">EVERYDAY COLLECTION / CONCEPT</p>
-                <h2 id="modal-title">{selectedProduct.name}</h2>
-                <p className="serif-subtitle">{selectedProduct.english}</p>
-                <p>{selectedProduct.description}</p>
-                <div className="product-spec">
-                  <span>Màu minh họa</span>
-                  <strong>
-                    <i className={`swatch swatch-${selectedProduct.color.toLowerCase()}`} />
-                    {selectedProduct.color}
-                  </strong>
-                </div>
-                <div className="product-spec">
-                  <span>Vật liệu sử dụng</span>
-                  <strong>{selectedProduct.materialUsed}</strong>
-                </div>
-                <div className="product-spec">
-                  <span>Giá kế hoạch</span>
-                  <strong>{currency(selectedProduct.price, lang)}</strong>
-                </div>
-                <p className="modal-note">
-                  Hình tham khảo trong đề án SenPine. Thành phần, kích cỡ và thông số sản phẩm chưa được xác nhận. Chưa mở bán.
-                </p>
-                <button className="button button-dark" onClick={() => toggleSaved(selectedProduct.id)}>
-                  {saved.includes(selectedProduct.id) ? "Đã lưu thiết kế" : "Lưu thiết kế yêu thích"}
-                  <Heart size={18} fill={saved.includes(selectedProduct.id) ? "currentColor" : "none"} />
-                </button>
-                <Link className="text-link" href={`/products/${selectedProduct.slug}`}>
-                  Xem trang chi tiết <ArrowUpRight size={18} />
-                </Link>
-              </div>
-            </div>
+            <ProductQuickView
+              product={selectedProduct}
+              lang={lang}
+              isSaved={saved.includes(selectedProduct.id)}
+              onToggleSave={toggleSaved}
+              onNavigate={() => setOverlay(null)}
+            />
           )}
 
           {/* Material Dossier Quick Dialog */}
           {selectedMaterial && (
-            <div className="modal-content">
-              <p className="eyebrow">MATERIAL LAB / {selectedMaterial.origin}</p>
-              <h2 id="modal-title">{selectedMaterial.name}</h2>
-              <div className="material-modal-photo">
-                <Image
-                  src={materialImages[Number(selectedMaterial.number) - 1].src}
-                  alt={materialImages[Number(selectedMaterial.number) - 1].alt}
-                  fill
-                  sizes="700px"
-                  style={{ objectFit: "contain" }}
-                />
-              </div>
-              <p>{selectedMaterial.detail}</p>
-              <div className="product-spec">
-                <span>Thành phần</span>
-                <strong>{selectedMaterial.specs[lang].composition}</strong>
-              </div>
-              <div className="product-spec">
-                <span>Định lượng & Khổ vải</span>
-                <strong>
-                  {selectedMaterial.specs[lang].weightGsm} • {selectedMaterial.specs[lang].widthCm}
-                </strong>
-              </div>
-              <div className="product-spec">
-                <span>Giá theo đề tài / mét</span>
-                <strong>{currency(selectedMaterial.price, lang)}</strong>
-              </div>
-              <p className="modal-note">
-                Ảnh chỉ minh họa. Chưa có chứng nhận, dữ liệu kiểm nghiệm hoặc cam kết đặc tính vật liệu thương mại.
-              </p>
-              <div style={{ display: "flex", gap: "15px", marginTop: "18px", flexWrap: "wrap" }}>
-                <button className="button button-dark" onClick={() => open({ kind: "business", intent: "sample" })}>
-                  Khám phá bộ mẫu <ArrowUpRight size={18} />
-                </button>
-                <Link className="text-link" href={`/materials/${selectedMaterial.id}`}>
-                  Xem trang vật liệu <ArrowUpRight size={18} />
-                </Link>
-              </div>
-            </div>
+            <MaterialQuickView
+              material={selectedMaterial}
+              lang={lang}
+              onRequestSample={() => open({ kind: "business", intent: "sample" })}
+              onNavigate={() => setOverlay(null)}
+            />
           )}
 
           {/* Trace Sample Modal */}

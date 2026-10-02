@@ -41,7 +41,7 @@
 .ab-hero-gallery-label { position: absolute; bottom: -15px; left: 0; font-size: var(--type-caption); color: #d4dbc5; letter-spacing: .13em; }
 .ab-hero-bottom { position: absolute; inset: auto var(--ab-gutter) 28px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e4cf9b3b; padding-top: 22px; }
 .ab-hero-bottom > span, .ab-hero-bottom > a { display: flex; gap: 18px; align-items: center; font-size: var(--type-caption); letter-spacing: .08em; color: #ddd8c3; }
-.ab-navigation { position: sticky; top: 76px; z-index: 20; display: flex; justify-content: space-between; gap: 12px; padding: 0 var(--ab-gutter); border-block: 1px solid var(--line); background: var(--ivory); overflow-x: auto; scrollbar-width: none; }
+.ab-navigation { position: sticky; top: var(--header-height, 74px); z-index: 20; display: flex; justify-content: space-between; gap: 12px; padding: 0 var(--ab-gutter); border-block: 1px solid var(--line); background: var(--ivory); overflow-x: auto; scrollbar-width: none; }
 .ab-navigation > a { white-space: nowrap; padding: 22px 10px; font-size: var(--type-control); display: flex; align-items: center; gap: 10px; border-bottom: 2px solid transparent; transition: color .25s, border-color .25s; }
 .ab-navigation > a > span { font-size: var(--type-control); color: var(--ab-accent); }
 .ab-navigation > a:hover { color: var(--ab-accent); border-bottom-color: var(--ab-accent); }
@@ -151,8 +151,9 @@
 .ab-process-steps { border-top: 1px solid var(--line-strong); }
 .ab-process-steps > div { border-bottom: 1px solid var(--line-strong); }
 .ab-process-steps h3 { font-size: var(--type-subtitle); font-weight: 600; line-height: var(--type-card-line); letter-spacing: var(--type-card-tracking); }
-.ab-process-steps h3 button { display: grid; grid-template-columns: 22px 1fr 20px; align-items: center; gap: 17px; width: 100%; text-align: left; padding: 23px 0; }
-.ab-process-steps h3 span { font-size: var(--type-caption); color: var(--ab-accent); }
+.ab-process-steps h3 button { display: grid; grid-template-columns: 22px minmax(0, 1fr) 20px; align-items: center; gap: 17px; width: 100%; text-align: left; padding: 23px 0; }
+.ab-process-steps h3 button > span:first-child { font-size: var(--type-caption); color: var(--ab-accent); }
+.ab-process-title { min-width: 0; overflow-wrap: anywhere; }
 .ab-process-steps h3 svg { color: var(--ab-accent); transition: rotate .3s; }
 .ab-process-steps .is-active h3 svg { rotate: 45deg; }
 .ab-process-steps [role="region"] { padding: 0 20px 24px 39px; animation: ab-panel-in .4s both; }
@@ -245,7 +246,7 @@
   .ab-product-grid { gap: 35px 20px; }
   .ab-product-label h3 { font-size: var(--type-card-title-small); font-weight: 600; line-height: var(--type-card-line); letter-spacing: var(--type-card-tracking); }
 }
-@media (max-width: 1050px) { .ab-navigation { top: 74px; padding-inline: 3%; justify-content: start; } }
+@media (max-width: 1050px) { .ab-navigation { top: var(--header-height, 74px); padding-inline: 3%; justify-content: start; } }
 @media (max-width: 800px) {
   .ab-section { padding-block: 65px; }
   .ab-hero { min-height: auto; padding-top: 130px; padding-bottom: 100px; grid-template-columns: 1fr; gap: 35px; }
@@ -297,7 +298,7 @@
   .ab-dialog-copy { padding: 30px; }
   .ab-dialog-visual .ab-tabs { padding-right: 52px; }
 }
-@media (max-width: 768px) { .ab-navigation { top: 68px; } }
+@media (max-width: 768px) { .ab-navigation { top: var(--header-height, 68px); } }
 @media (max-width: 500px) {
   .ab-hero { padding-top: 110px; }
   .ab-hero h1 { font-size: var(--type-page-title); line-height: var(--type-display-line); letter-spacing: var(--type-display-tracking); font-weight: 600; }

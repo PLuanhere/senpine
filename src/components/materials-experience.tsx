@@ -10,6 +10,8 @@ import { materials } from "@/lib/content";
 import { detailsImages, materialImages } from "@/lib/imagery";
 import { useMotion } from "@/lib/motion-context";
 import { useLanguage } from "@/lib/language-context";
+import { EditorialDialog } from "@/components/editorial-dialog";
+import { MaterialQuickView } from "@/components/material-quick-view";
 
 const profiles = [
   {
@@ -34,12 +36,14 @@ export function MaterialsExperience() {
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   const [selected, setSelected] = useState(0);
   const [zoom, setZoom] = useState(1);
+  const [quickViewMaterial, setQuickViewMaterial] = useState<string | null>(null);
   const { intro, reduced, enabled } = useMotion();
   const { lang } = useLanguage();
   const vi = lang === "vi";
   const text = (vietnamese: string, english: string) => vi ? vietnamese : english;
   const profile = profiles[selected][lang];
   const material = materials[selected];
+  const quickMaterialObj = materials.find((m) => m.id === quickViewMaterial);
 
   useEffect(() => {
     if (intro !== "done" || !enabled || reduced || !root.current) return;
@@ -123,7 +127,7 @@ export function MaterialsExperience() {
           </div>
           <div className="ml-sample-panel">
             <div className="ml-sample-tabs" role="tablist" aria-label={text("Chọn mẫu vật liệu", "Choose a material sample")}>{materials.map((item, index) => <button key={item.id} ref={(element) => { tabs.current[index] = element; }} id={`ml-tab-${item.id}`} type="button" role="tab" aria-selected={selected === index} aria-controls="ml-sample-description" tabIndex={selected === index ? 0 : -1} onClick={() => select(index)} onKeyDown={(event) => onTabKey(event, index)} className={selected === index ? "is-selected" : ""}><span>{item.number}</span>{item.name}<ArrowUpRight size={17} /></button>)}</div>
-            <div id="ml-sample-description" className="ml-sample-description" role="tabpanel" aria-labelledby={`ml-tab-${material.id}`} tabIndex={0}><p className="ml-kicker">{vi ? material.origin : material.originEn}</p><h3>{profile.mood}</h3><p>{profile.description}</p><div className="ml-tags">{profile.keywords.map((keyword) => <span key={keyword}>{keyword}</span>)}</div><Link href={`/materials/${material.id}`} className="ml-text-link">{text("Mở hồ sơ vật liệu", "Open material profile")}<ArrowUpRight size={17} /></Link></div>
+            <div id="ml-sample-description" className="ml-sample-description" role="tabpanel" aria-labelledby={`ml-tab-${material.id}`} tabIndex={0}><p className="ml-kicker">{vi ? material.origin : material.originEn}</p><h3>{profile.mood}</h3><p>{profile.description}</p><div className="ml-tags">{profile.keywords.map((keyword) => <span key={keyword}>{keyword}</span>)}</div><div style={{ display: "flex", gap: "14px", alignItems: "center", flexWrap: "wrap", marginTop: "16px" }}><button type="button" className="ml-button" style={{ padding: "11px 18px", fontSize: "var(--type-control)", display: "inline-flex", alignItems: "center", gap: "8px" }} onClick={() => setQuickViewMaterial(material.id)}><ArrowUpRight size={16} />{text("Xem nhanh hồ sơ", "Quick view dossier")}</button><Link href={`/materials/${material.id}`} className="ml-text-link">{text("Mở hồ sơ vật liệu", "Open material profile")}<ArrowUpRight size={17} /></Link></div></div>
           </div>
         </div>
         <p className="ml-reference-note">{text("Ảnh tham khảo từ đề án. Blend minh họa nguồn sợi; hình SenSilk là vải thêu hoa sen. Cảm giác chạm và cấu trúc thực tế cần được xác nhận bằng mẫu thử.", "Reference images from the project. Blend illustrates fibre sources; SenSilk shows lotus embroidery. Actual hand-feel and structure must be confirmed through physical samples.")}</p>
@@ -135,9 +139,9 @@ export function MaterialsExperience() {
           const copy = entry[lang];
           return <article id={`material-${item.id}`} key={item.id} className={`ml-material ml-material-${entry.tone}`} aria-labelledby={`ml-heading-${item.id}`}>
             <div className="ml-material-visual"><div className="ml-material-photo"><Image src={materialImages[index].src} alt={materialImages[index].alt} fill sizes="(max-width: 800px) 100vw, 55vw" /></div><span className="ml-material-number" aria-hidden="true">{item.number}</span><div className="ml-source-inset"><div><Image src={entry.source.src} alt={entry.source.alt} fill sizes="(max-width: 800px) 30vw, 180px" /></div><span>{text("NGUỒN SỢI", "FIBRE SOURCE")} / {item.number}</span></div><div className="ml-photo-caption"><span>{item.code}</span><p>{copy.caption}</p></div></div>
-            <div className="ml-material-copy ml-reveal"><p className="ml-kicker">{item.number} / {vi ? item.origin : item.originEn}</p><h2 id={`ml-heading-${item.id}`}>{item.name === "SenPine Blend" ? <>SenPine<br />Blend<span>.</span></> : <>{item.name}<span>.</span></>}</h2><h3>{copy.detail}</h3><p>{copy.description}</p><dl className="ml-material-facts"><div><dt>{text("Nguồn nguyên liệu", "Botanical source")}</dt><dd>{copy.source}</dd></div><div><dt>{text("Bề mặt định hướng", "Surface direction")}</dt><dd>{copy.feel}</dd></div><div><dt>{text("Ứng dụng định hướng", "Intended use")}</dt><dd>{copy.use}</dd></div></dl>
+            <div className="ml-material-copy ml-reveal"><p className="ml-kicker">{item.number} / {vi ? item.origin : material.originEn}</p><h2 id={`ml-heading-${item.id}`}>{item.name === "SenPine Blend" ? <>SenPine<br />Blend<span>.</span></> : <>{item.name}<span>.</span></>}</h2><h3>{copy.detail}</h3><p>{copy.description}</p><dl className="ml-material-facts"><div><dt>{text("Nguồn nguyên liệu", "Botanical source")}</dt><dd>{copy.source}</dd></div><div><dt>{text("Bề mặt định hướng", "Surface direction")}</dt><dd>{copy.feel}</dd></div><div><dt>{text("Ứng dụng định hướng", "Intended use")}</dt><dd>{copy.use}</dd></div></dl>
               {index === 1 && <div className="ml-blend-ratio"><div aria-hidden="true"><span /><span /></div><p><span>95% {text("lá dứa", "pineapple")}</span><span>5% {text("tơ sen", "lotus")}</span></p><small>{text("Tỷ lệ phối trộn đề xuất trong concept.", "Proposed blend ratio in the concept.")}</small></div>}
-              <Link href={`/materials/${item.id}`} className="ml-text-link">{text("Khám phá", "Explore")} {item.name}<ArrowUpRight size={18} /></Link></div>
+              <div style={{ display: "flex", gap: "14px", alignItems: "center", flexWrap: "wrap", marginTop: "16px" }}><button type="button" className="ml-button" style={{ padding: "11px 18px", fontSize: "var(--type-control)", display: "inline-flex", alignItems: "center", gap: "8px" }} onClick={() => setQuickViewMaterial(item.id)}><ArrowUpRight size={16} />{text("Xem nhanh hồ sơ", "Quick view dossier")}</button><Link href={`/materials/${item.id}`} className="ml-text-link">{text("Khám phá", "Explore")} {item.name}<ArrowUpRight size={18} /></Link></div></div>
           </article>;
         })}
       </section>
@@ -154,6 +158,25 @@ export function MaterialsExperience() {
       </section>
 
       <section className="ml-sample-cta" aria-labelledby="ml-cta-title"><div className="ml-cta-text ml-reveal"><p className="ml-kicker">{text("TỪ MÀN HÌNH ĐẾN ĐẦU NGÓN TAY", "FROM THE SCREEN TO YOUR FINGERTIPS")}</p><h2 id="ml-cta-title">{text("Thiết kế tiếp theo", "Your next design")}<br /><em>{text("bắt đầu từ một mẫu vải.", "starts with a swatch.")}</em></h2><p>{text("Khám phá bộ mẫu dự kiến dành cho nhà thiết kế, studio và thương hiệu. Để câu chuyện bắt đầu bằng chất liệu.", "Explore the planned sample set for designers, studios and brands. Let the material start the conversation.")}</p><Link href="/business/request-sample" className="ml-button">{text("Tìm hiểu bộ mẫu vật liệu", "Explore the sample set")}<ArrowUpRight size={18} /></Link></div><div className="ml-cta-photo"><Image src={detailsImages.rawFiber.src} alt={detailsImages.rawFiber.alt} fill sizes="(max-width: 700px) 100vw, 45vw" /><span>LET THE<br />MATERIAL<br />SPEAK.</span></div></section>
+
+      {/* Material Dossier Quick Dialog */}
+      <EditorialDialog
+        isOpen={quickViewMaterial !== null}
+        onClose={() => setQuickViewMaterial(null)}
+        className="modal-material"
+      >
+        {quickMaterialObj && (
+          <MaterialQuickView
+            material={quickMaterialObj}
+            lang={lang}
+            onRequestSample={() => {
+              setQuickViewMaterial(null);
+              window.location.href = "/business/request-sample";
+            }}
+            onNavigate={() => setQuickViewMaterial(null)}
+          />
+        )}
+      </EditorialDialog>
     </main>
   );
 }

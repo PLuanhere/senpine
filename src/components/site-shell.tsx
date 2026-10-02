@@ -9,6 +9,10 @@ import { useCart, useSaved } from "@/lib/store";
 import { useTheme } from "@/lib/theme-context";
 import { useLanguage } from "@/lib/language-context";
 import { translations } from "@/lib/i18n";
+import { EditorialDialog } from "@/components/editorial-dialog";
+import { SearchDialogContent } from "@/components/search-dialog-content";
+import { SavedDialogContent } from "@/components/saved-dialog-content";
+import { ProductQuickView } from "@/components/product-quick-view";
 
 export function Brand({ small = false }: { small?: boolean }) {
   return (
@@ -24,8 +28,9 @@ export function SiteHeader({ overlayHero = false }: { overlayHero?: boolean }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [query, setQuery] = useState("");
-  const { saved } = useSaved();
+  const [savedOpen, setSavedOpen] = useState(false);
+  const [quickProduct, setQuickProduct] = useState<number | null>(null);
+  const { saved, toggle: toggleSaved } = useSaved();
   const { cart } = useCart();
   const { theme, toggleTheme } = useTheme();
   const { lang, toggleLang } = useLanguage();
@@ -43,34 +48,24 @@ export function SiteHeader({ overlayHero = false }: { overlayHero?: boolean }) {
   }, [overlayHero]);
 
   useEffect(() => {
-    if (!menuOpen && !searchOpen) return;
+    if (!menuOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setMenuOpen(false);
-        setSearchOpen(false);
       }
     };
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [menuOpen, searchOpen]);
+    return () => {
+      document.body.style.overflow = previous;
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
 
-  const term = query.trim().toLocaleLowerCase(lang === "vi" ? "vi" : "en");
-  const productMatches = term
-    ? products.filter(
-        (product) =>
-          `${product.name} ${product.english}`
-            .toLocaleLowerCase(lang === "vi" ? "vi" : "en")
-            .includes(term)
-      )
-    : products.slice(0, 3);
-  const materialMatches = term
-    ? materials.filter(
-        (material) =>
-          `${material.name} ${material.origin} ${material.originEn}`
-            .toLocaleLowerCase(lang === "vi" ? "vi" : "en")
-            .includes(term)
-      )
-    : [];
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
 
   // When Vietnamese, use exact Vietnamese navigation labels to satisfy automated tests
   // When English, use translated labels
@@ -102,29 +97,60 @@ export function SiteHeader({ overlayHero = false }: { overlayHero?: boolean }) {
         </nav>
 
         <div className="header-tools">
+          {/* Desktop Language toggle pill */}
+          <button
+            className="lang-toggle-pill desktop-only-tool"
+            onClick={toggleLang}
+            aria-label={lang === "vi" ? "Chuyển sang tiếng Anh" : "Switch to Vietnamese"}
+            title={lang === "vi" ? "English" : "Tiếng Việt"}
+          >
+            <span className={lang === "vi" ? "active-lang" : ""}>VI</span>
+            <span className="lang-sep">/</span>
+            <span className={lang === "en" ? "active-lang" : ""}>EN</span>
+          </button>
+
+          {/* Desktop Theme toggle button */}
+          <button
+            className="icon-button theme-toggle-btn desktop-only-tool"
+            onClick={toggleTheme}
+            aria-label={theme === "light" ? "Giao diện tối" : "Giao diện sáng"}
+            title={theme === "light" ? (lang === "vi" ? "Giao diện tối" : "Dark theme") : (lang === "vi" ? "Giao diện sáng" : "Light theme")}
+          >
+            {theme === "light" ? <Moon size={18} /> : <Sun size={18} className="theme-sun-icon" />}
+          </button>
+
           {/* Search Button */}
           <button
             className="icon-button"
-            aria-label="Tìm kiếm"
+            aria-label={lang === "vi" ? "Tìm sản phẩm" : "Search products"}
             title={lang === "vi" ? "Tìm kiếm" : "Search"}
             onClick={() => {
               setSearchOpen(true);
+              setSavedOpen(false);
               setMenuOpen(false);
             }}
           >
             <Search size={19} />
           </button>
 
-          {/* Wishlist Link */}
-          <Link
+          {/* Wishlist / Saved Button */}
+          <button
             className="icon-button saved-count"
-            href="/saved"
-            aria-label={`Đã lưu ${saved.length} thiết kế`}
+            onClick={() => {
+              setSavedOpen(true);
+              setSearchOpen(false);
+              setMenuOpen(false);
+            }}
+            aria-label={
+              lang === "vi"
+                ? `Sản phẩm đã lưu (${saved.length})`
+                : `Saved designs (${saved.length})`
+            }
             title={lang === "vi" ? `Đã lưu (${saved.length})` : `Saved (${saved.length})`}
           >
             <Heart size={19} />
             {saved.length > 0 && <span>{saved.length}</span>}
-          </Link>
+          </button>
 
           {/* Experience Bag Link */}
           <Link
@@ -148,10 +174,17 @@ export function SiteHeader({ overlayHero = false }: { overlayHero?: boolean }) {
             {menuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
+      </header>
 
-        {/* Mobile Navigation Drawer */}
-        {menuOpen && (
-          <nav id="site-mobile-nav" className="mobile-nav" aria-label="Điều hướng trên điện thoại">
+      {/* Mobile Navigation Drawer - positioned outside header so backdrop-filter does not clip it */}
+      {menuOpen && (
+        <>
+          <div className="mobile-nav-backdrop" onClick={() => setMenuOpen(false)} aria-hidden="true" />
+          <nav
+            id="site-mobile-nav"
+            className="mobile-nav"
+            aria-label="Điều hướng trên điện thoại"
+          >
             <div className="mobile-nav-top">
               <span className="eyebrow">{lang === "vi" ? "ĐIỀU HƯỚNG SENPINE" : "SENPINE NAVIGATION"}</span>
               <div className="mobile-tools-bar">
@@ -175,7 +208,12 @@ export function SiteHeader({ overlayHero = false }: { overlayHero?: boolean }) {
 
             <div className="mobile-nav-links">
               {navItems.map(([label, href], index) => (
-                <Link key={href} href={href} onClick={() => setMenuOpen(false)}>
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={() => setMenuOpen(false)}
+                  aria-current={pathname === href || pathname.startsWith(`${href}/`) ? "page" : undefined}
+                >
                   <span>0{index + 1}</span>
                   {label}
                   <ArrowUpRight size={21} />
@@ -199,77 +237,66 @@ export function SiteHeader({ overlayHero = false }: { overlayHero?: boolean }) {
               </p>
             </div>
           </nav>
-        )}
-      </header>
-
-      {/* Global Search Overlay */}
-      {searchOpen && (
-        <div className="site-search-backdrop" onClick={() => setSearchOpen(false)}>
-          <section
-            role="dialog"
-            aria-modal="true"
-            aria-label="Tìm kiếm SenPine"
-            className="site-search"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="site-search-heading">
-              <p className="eyebrow">{t.nav.search.toUpperCase()}</p>
-              <button
-                aria-label="Đóng tìm kiếm"
-                className="icon-button"
-                onClick={() => setSearchOpen(false)}
-              >
-                <X size={24} />
-              </button>
-            </div>
-            <label className="search-field">
-              <Search size={24} />
-              <input
-                autoFocus
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder={
-                  lang === "vi"
-                    ? "Tìm thiết kế hoặc vật liệu (ví dụ: áo, váy, khăn, pinefiber, sensilk)…"
-                    : "Search garments or materials (e.g. shirt, dress, scarf, pinefiber, sensilk)…"
-                }
-                type="search"
-              />
-            </label>
-            <div className="site-search-results">
-              {productMatches.map((product) => (
-                <Link
-                  key={product.slug}
-                  href={`/products/${product.slug}`}
-                  onClick={() => setSearchOpen(false)}
-                >
-                  <span className="search-result-name">{lang === "vi" ? product.name : product.english}</span>
-                  <span className="search-result-sub">{lang === "vi" ? product.category : product.categoryEn}</span>
-                  <ArrowUpRight size={19} />
-                </Link>
-              ))}
-              {materialMatches.map((material) => (
-                <Link
-                  key={material.id}
-                  href={`/materials/${material.id}`}
-                  onClick={() => setSearchOpen(false)}
-                >
-                  <span className="search-result-name">{material.name}</span>
-                  <span className="search-result-sub">{lang === "vi" ? material.origin : material.originEn}</span>
-                  <ArrowUpRight size={19} />
-                </Link>
-              ))}
-              {productMatches.length + materialMatches.length === 0 && (
-                <p className="search-empty-msg">
-                  {lang === "vi"
-                    ? "Chưa có kết quả phù hợp. Hãy thử từ khóa “áo”, “sen”, “dứa” hoặc “vải”."
-                    : "No matching results. Try keywords like 'shirt', 'lotus', 'pineapple', or 'fabric'."}
-                </p>
-              )}
-            </div>
-          </section>
-        </div>
+        </>
       )}
+
+      {/* Global Search Dialog */}
+      <EditorialDialog
+        isOpen={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        className="modal-search"
+        closeAriaLabel={lang === "vi" ? "Đóng cửa sổ" : "Close window"}
+      >
+        <SearchDialogContent
+          lang={lang}
+          onSelectProduct={(id) => {
+            setSearchOpen(false);
+            setQuickProduct(id);
+          }}
+          onClose={() => setSearchOpen(false)}
+        />
+      </EditorialDialog>
+
+      {/* Global Saved Dialog */}
+      <EditorialDialog
+        isOpen={savedOpen}
+        onClose={() => setSavedOpen(false)}
+        className="modal-saved"
+        closeAriaLabel={lang === "vi" ? "Đóng cửa sổ" : "Close window"}
+      >
+        <SavedDialogContent
+          lang={lang}
+          saved={saved}
+          onToggleSaved={toggleSaved}
+          onSelectProduct={(id) => {
+            setSavedOpen(false);
+            setQuickProduct(id);
+          }}
+          onExploreCollection={() => {
+            setSavedOpen(false);
+            window.location.href = "/collection";
+          }}
+          onClose={() => setSavedOpen(false)}
+        />
+      </EditorialDialog>
+
+      {/* Product Quick View Dialog */}
+      <EditorialDialog
+        isOpen={quickProduct !== null}
+        onClose={() => setQuickProduct(null)}
+        className="modal-product"
+        closeAriaLabel={lang === "vi" ? "Đóng cửa sổ" : "Close window"}
+      >
+        {quickProduct !== null && products[quickProduct] && (
+          <ProductQuickView
+            product={products[quickProduct]}
+            lang={lang}
+            isSaved={saved.includes(quickProduct)}
+            onToggleSave={toggleSaved}
+            onNavigate={() => setQuickProduct(null)}
+          />
+        )}
+      </EditorialDialog>
     </>
   );
 }
