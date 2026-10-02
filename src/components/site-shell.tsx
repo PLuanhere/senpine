@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowUpRight, Heart, Menu, Moon, Search, ShoppingBag, Sun, X } from "lucide-react";
-import { materials, navigation, navigationEn, products } from "@/lib/content";
+import { navigation, navigationEn, products } from "@/lib/content";
 import { useCart, useSaved } from "@/lib/store";
 import { useTheme } from "@/lib/theme-context";
 import { useLanguage } from "@/lib/language-context";
@@ -64,7 +64,8 @@ export function SiteHeader({ overlayHero = false }: { overlayHero?: boolean }) {
   }, [menuOpen]);
 
   useEffect(() => {
-    setMenuOpen(false);
+    const frame = requestAnimationFrame(() => setMenuOpen(false));
+    return () => cancelAnimationFrame(frame);
   }, [pathname]);
 
   // When Vietnamese, use exact Vietnamese navigation labels to satisfy automated tests
@@ -223,10 +224,6 @@ export function SiteHeader({ overlayHero = false }: { overlayHero?: boolean }) {
                 <span>07</span>
                 {t.nav.sustainability} <ArrowUpRight size={21} />
               </Link>
-              <Link href="/contact" onClick={() => setMenuOpen(false)}>
-                <span>08</span>
-                {t.nav.contact} <ArrowUpRight size={21} />
-              </Link>
             </div>
 
             <div className="mobile-nav-footer">
@@ -364,7 +361,7 @@ export function SiteFooter() {
         {/* Corporate & B2B Links */}
         <div>
           <p className="eyebrow">{t.footer.corpTitle}</p>
-          <Link href="/business">{t.nav.business}</Link>
+          <Link href="/careers">{t.nav.business}</Link>
           <Link href="/sustainability">{t.nav.sustainability}</Link>
           <Link href="/about">{t.nav.about}</Link>
           <Link href="/contact">{t.nav.contact}</Link>

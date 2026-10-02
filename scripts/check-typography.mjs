@@ -65,7 +65,7 @@ try {
     console.log(`PASS: typography on ${routes.length} routes at ${width}px.`);
   }
   await ready(page, "/story");
-  for (const [label, route] of [["Vật liệu", "/materials"], ["Bộ sưu tập", "/collection"], ["Về SenPine", "/about"]]) {
+  for (const [label, route] of [["Vật liệu", "/materials"], ["Bộ sưu tập", "/collection"], ["Liên hệ", "/contact"]]) {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.getByRole("navigation", { name: "Điều hướng chính" }).getByRole("link", { name: label, exact: true }).click();
     await page.waitForURL(`**${route}`);

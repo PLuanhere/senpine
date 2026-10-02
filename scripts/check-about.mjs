@@ -80,7 +80,7 @@ try {
   await page.goto(`${base}/saved`, { waitUntil: "networkidle" });
   await ready();
   assert.match(await page.locator("main").innerText(), /Áo sơ mi tự nhiên/);
-  await page.getByRole("navigation", { name: "Điều hướng chính" }).getByRole("link", { name: "Về SenPine", exact: true }).click();
+  await page.locator(".footer").getByRole("link", { name: "Về SenPine", exact: true }).click();
   await page.waitForURL("**/about");
   await page.waitForTimeout(1500);
   assert.equal(await page.locator(".ab-product-grid").getByRole("button", { name: "Bỏ lưu Áo sơ mi tự nhiên", exact: true }).getAttribute("aria-pressed"), "true");

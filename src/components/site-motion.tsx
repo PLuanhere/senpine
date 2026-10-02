@@ -14,7 +14,7 @@ function sceneFor(path: string): Scene {
   if (path === "/") return "botanical";
   if (path.startsWith("/products/")) return "atelier";
   if (path.startsWith("/business/request-")) return "form";
-  const scenes: Record<string, Scene> = { story: "narrative", materials: "weave", collection: "runway", trace: "scan", business: "blueprint", sustainability: "leaf", about: "orbit", contact: "connect", saved: "keepsake", experience: "cart" };
+  const scenes: Record<string, Scene> = { story: "narrative", materials: "weave", collection: "runway", trace: "scan", careers: "blueprint", business: "blueprint", sustainability: "leaf", about: "orbit", contact: "connect", saved: "keepsake", experience: "cart" };
   return scenes[path.split("/")[1]] || "botanical";
 }
 

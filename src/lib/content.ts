@@ -5,8 +5,8 @@ export const navigation = [
   ["Vật liệu", "/materials"],
   ["Bộ sưu tập", "/collection"],
   ["Truy xuất", "/trace"],
-  ["Đối tác", "/business"],
-  ["Về SenPine", "/about"],
+  ["Tuyển dụng", "/careers"],
+  ["Liên hệ", "/contact"],
 ] as const;
 
 export const navigationEn = [
@@ -14,8 +14,8 @@ export const navigationEn = [
   ["Materials", "/materials"],
   ["Collection", "/collection"],
   ["Traceability", "/trace"],
-  ["For Business", "/business"],
-  ["About SenPine", "/about"],
+  ["Careers", "/careers"],
+  ["Contact", "/contact"],
 ] as const;
 
 export interface MaterialSpec {

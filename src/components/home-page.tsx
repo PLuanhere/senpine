@@ -974,12 +974,12 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* B2B For Business */}
+        {/* Careers */}
         <section id="business" className="business section-space">
           <div className="section-top reveal">
-            <p className="eyebrow">{t.businessSec.eyebrow}</p>
+            <p className="eyebrow">{lang === "vi" ? "07 / TUYỂN DỤNG" : "07 / CAREERS"}</p>
             <span className="section-aside">
-              {lang === "vi" ? "Giải pháp vật liệu bền vững cho doanh nghiệp" : "Sustainable B2B Solutions"}
+              {lang === "vi" ? "Con người làm nên giá trị" : "People create value"}
             </span>
           </div>
 
@@ -988,32 +988,32 @@ export default function HomePage() {
               <h2>
                 {lang === "vi" ? (
                   <>
-                    Ý tưởng của bạn.<br />
-                    <em>Chất liệu của tương lai.</em>
+                    Chuyên môn của bạn.<br />
+                    <em>Một hành trình có ý nghĩa.</em>
                   </>
                 ) : (
                   <>
-                    Your Design Vision.<br />
-                    <em>Next-Gen Materials.</em>
+                    Your expertise.<br />
+                    <em>A meaningful journey.</em>
                   </>
                 )}
               </h2>
               <p>
                 {lang === "vi"
-                  ? "Dành cho nhà thiết kế, thương hiệu thời trang và đối tác sản xuất muốn khám phá vật liệu có nguồn gốc thực vật Việt Nam. Bắt đầu từ bộ mẫu vải PineFiber, SenPine Blend và SenSilk."
-                  : "For designers, fashion labels, and manufacturing partners exploring plant-based textiles from Vietnam. Discuss the proposed PineFiber, SenPine Blend, and SenSilk materials."}
+                  ? "Từ nghiên cứu và sản xuất đến thiết kế, kinh doanh và vận hành. Khám phá các vai trò trong kế hoạch phát triển đội ngũ SenPine và tìm nơi bạn có thể đóng góp."
+                  : "From research and production to design, sales and operations. Explore the roles in SenPine's team development plan and find where you can contribute."}
               </p>
               <div className="business-actions">
-                <Link href="/business" className="button button-dark">
-                  {lang === "vi" ? "Tìm hiểu hợp tác" : "Explore partnership"} <ArrowUpRight size={18} />
+                <Link href="/careers" className="button button-dark">
+                  {lang === "vi" ? "Khám phá cơ hội nghề nghiệp" : "Explore career opportunities"} <ArrowUpRight size={18} />
                 </Link>
               </div>
             </div>
             <div className="business-visual" aria-hidden="true">
               <Image src={detailsImages.rawFiber.src} alt={detailsImages.rawFiber.alt} fill sizes="(max-width: 900px) 88vw, 38vw" />
-              <span className="business-visual-top">SENPINE / MATERIAL STUDY</span>
+              <span className="business-visual-top">SENPINE / PEOPLE & PURPOSE</span>
               <div className="business-visual-bottom">
-                <span>01 / PINEFIBER<br />02 / SENPINE BLEND<br />03 / SENSILK</span>
+                <span>01 / RESEARCH<br />02 / CREATE<br />03 / GROW TOGETHER</span>
                 <span className="business-visual-mark">✳</span>
               </div>
             </div>
@@ -1068,7 +1068,7 @@ export default function HomePage() {
 
           <div>
             <p className="eyebrow">{t.footer.corpTitle}</p>
-            <Link href="/business">{t.nav.business}</Link>
+            <Link href="/careers">{t.nav.business}</Link>
             <Link href="/sustainability">{t.nav.sustainability}</Link>
             <Link href="/about">{t.nav.about}</Link>
             <Link href="/contact">{t.nav.contact}</Link>
