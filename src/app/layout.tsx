@@ -10,6 +10,7 @@ import "./clean-layout.css";
 import "./home-motion.css";
 import "./site-motion.css";
 import "./page-effects.css";
+import "./chatbot.css";
 import { Providers } from "@/lib/providers";
 
 export const metadata: Metadata = {

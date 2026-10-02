@@ -13,6 +13,38 @@ pnpm dev
 
 Mở [http://localhost:3000](http://localhost:3000).
 
+## Trợ lý AI Gemini
+
+Khung **Hỏi SenPine** ở góc phải dưới xuất hiện trên mọi trang. Bot dùng Gemini thật, có ngữ cảnh từ dữ liệu vật liệu, bộ sưu tập, truy xuất, tuyển dụng và liên hệ. Có gửi bằng Enter, xuống dòng bằng Shift + Enter, dừng câu trả lời, thử lại và bắt đầu hội thoại mới. Đóng khung chat hoặc chuyển trang bằng liên kết nội bộ vẫn giữ hội thoại; tải lại trang sẽ xóa hội thoại trên trình duyệt.
+
+Quy tắc tại `src/lib/chat-policy.ts` giới hạn bot vào thông tin được cung cấp từ website SenPine, được áp dụng qua system instruction ở mọi lượt gửi. Bot từ chối câu hỏi ngoài phạm vi, cả khi câu hỏi có nhắc tên SenPine hoặc yêu cầu bỏ qua quy tắc. Với tin nhắn có nhiều chủ đề, bot chỉ giải đáp phần thuộc website; thông tin chưa có trên website được trả lời là chưa có dữ liệu. Quy tắc này cũng áp dụng khi tiếp tục hội thoại cũ hoặc thử lại.
+
+1. Tạo key trong [Google AI Studio](https://aistudio.google.com/apikey).
+2. Điền vào file `.env` ở thư mục gốc (đã tạo sẵn; `.env.example` là mẫu):
+
+   ```dotenv
+   GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+   GEMINI_MODEL=gemini-3.8-flash
+   ```
+
+3. Khởi động lại `pnpm dev`, mở website và bấm **Hỏi SenPine**. Nếu có `.env.local` chứa cùng tên biến, Next.js ưu tiên giá trị trong `.env.local`.
+
+Model có thể đổi qua `GEMINI_MODEL`, dùng model Gemini hỗ trợ trả lời văn bản và API `generateContent`. Mặc định lấy theo [danh sách model chính thức](https://ai.google.dev/gemini-api/docs/models). Backend gọi REST `streamGenerateContent` và truyền từng đoạn trả lời tới trình duyệt. Tham khảo [hướng dẫn API của Google](https://ai.google.dev/gemini-api/docs/migrate-to-interactions), trong đó `generateContent` vẫn được hỗ trợ.
+
+Key chỉ được đọc phía máy chủ ở `/api/chat`; không đặt tên biến có tiền tố `NEXT_PUBLIC_` và không đưa `.env` vào Git. Website không ghi hội thoại vào cơ sở dữ liệu hay localStorage; nội dung gửi và lịch sử tối đa 10 lượt hoàn tất được gửi tới Gemini để tạo câu trả lời. Chi phí và hạn mức phụ thuộc tài khoản Google; kiểm tra chúng trong AI Studio. Bot không đặt hàng, nộp CV hay gửi biểu mẫu demo.
+
+API có giới hạn kích thước tin nhắn, thời gian chờ 55 giây, 12 yêu cầu/phút cho mỗi địa chỉ do máy chủ nhận được và tối đa 8 lượt đang xử lý trong một tiến trình. Khi triển khai công khai với nhiều máy chủ, cần limiter dùng chung và cấu hình proxy tin cậy cho `x-forwarded-for`; limiter hiện tại dành cho demo, không thay thế kiểm soát hạn mức trong tài khoản Google. Ngữ cảnh nằm ở `src/lib/chat-context.ts`, được lấy từ các dữ liệu nội dung đang dùng trên website.
+
+Kiểm tra sau khi chạy dev:
+
+```bash
+pnpm check:chatbot
+```
+
+Kiểm tra dùng phản hồi Gemini giả lập để xác minh giao thức streaming, xử lý lỗi và giao diện mà không tiêu thụ key. Kết nối Gemini thực tế cần thử sau khi điền key.
+
+Nếu chat báo **máy chủ bị chặn kết nối tới Gemini**, tiến trình Next.js đang thiếu quyền truy cập mạng (ví dụ chạy trong sandbox). Chạy `pnpm dev` từ terminal trên máy có kết nối Internet hoặc khởi động máy chủ với quyền mạng được cấp. Sửa key không giải quyết được lỗi này. API phân biệt lỗi quyền mạng, DNS, chứng chỉ TLS và hết thời gian chờ; không gửi lỗi thô hoặc key tới trình duyệt. Không tắt kiểm tra chứng chỉ TLS để xử lý lỗi kết nối.
+
 ## Kiểm tra
 
 ```bash

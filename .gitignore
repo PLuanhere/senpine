@@ -9,6 +9,7 @@
 
 # environment and local files
 .env*
+.env.example
 !.env.example
 *.log
 .DS_Store
