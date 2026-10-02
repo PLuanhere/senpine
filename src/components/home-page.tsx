@@ -27,6 +27,8 @@ import { useLanguage } from "@/lib/language-context";
 import { translations } from "@/lib/i18n";
 import { useMotion } from "@/lib/motion-context";
 import { MotionRibbon } from "@/components/motion-ribbon";
+import { ProductArtwork } from "@/components/product-artwork";
+import { detailsImages, materialImages } from "@/lib/imagery";
 
 type Overlay =
   | { kind: "search" }
@@ -48,25 +50,17 @@ function Brand({ small = false }: { small?: boolean }) {
 }
 
 function ProductImage({ id, large = false }: { id: number; large?: boolean }) {
-  return (
-    <div className={`product-image ${large ? "product-image-large" : ""}`}>
-      <Image
-        src="/images/collection.webp"
-        alt={`Minh họa ${products[id].name.toLowerCase()} SenPine`}
-        width={1536}
-        height={1024}
-        sizes={large ? "(max-width: 700px) 270vw, 1260px" : "(max-width: 700px) 225vw, 90vw"}
-        className="product-sprite"
-        style={{ left: `${-(id % 3) * 100}%`, top: `${-Math.floor(id / 3) * 100}%` }}
-      />
-    </div>
-  );
+  return <ProductArtwork id={id} className={large ? "product-image-large" : ""} />;
+}
+
+function normalizeSearch(value: string) {
+  return value.toLocaleLowerCase("vi").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").trim().replace(/\s+/g, " ");
 }
 
 const heroScenes = [
-  { image: "/images/botanical.webp", vi: "THỰC VẬT BẢN ĐỊA", en: "BOTANICAL ORIGINS" },
-  { image: "/images/origins.webp", vi: "TỪ VÙNG NGUYÊN LIỆU", en: "FROM THE SOURCE" },
-  { image: "/images/fashion.webp", vi: "ĐẾN THIẾT KẾ", en: "INTO DESIGN" },
+  { image: detailsImages.harvest.src, vi: "TỪ VÙNG NGUYÊN LIỆU", en: "FROM THE SOURCE" },
+  { image: detailsImages.drying.src, vi: "TỪNG SỢI TỰ NHIÊN", en: "NATURAL FIBERS" },
+  { image: detailsImages.fashionExhibition.src, vi: "ĐẾN THIẾT KẾ", en: "INTO DESIGN" },
 ];
 
 function HeroScenes({ lang }: { lang: "vi" | "en" }) {
@@ -145,6 +139,7 @@ export default function HomePage() {
   const open = (next: Overlay) => {
     setMenuOpen(false);
     setSubmitted(false);
+    if (next?.kind === "search") setQuery("");
     setOverlay(next);
   };
 
@@ -340,6 +335,7 @@ export default function HomePage() {
     const modal = dialog.current;
     if (!overlay || !modal) return;
     if (!modal.open) modal.showModal();
+    if (overlay.kind === "search") modal.querySelector<HTMLInputElement>('input[type="search"]')?.focus();
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
@@ -361,7 +357,7 @@ export default function HomePage() {
   const selectedMaterial = overlay?.kind === "material" ? materials.find((item) => item.id === overlay.id) : null;
   const tracedMaterial = materials.find((item) => item.code === traceCode);
   const matches = products.filter((product) =>
-    `${product.name} ${product.english}`.toLocaleLowerCase("vi").includes(query.toLocaleLowerCase("vi"))
+    normalizeSearch(`${product.name} ${product.english}`).includes(normalizeSearch(query))
   );
 
   const displayedProducts =
@@ -575,8 +571,8 @@ export default function HomePage() {
           <div className="origin-grid">
             <Link className="origin-panel lotus reveal" href="/materials/sensilk">
               <Image
-                src="/images/origins.webp"
-                alt="Hình minh họa hoa và cuống sen, nguồn nguyên liệu cho tơ sen"
+                src={detailsImages.lotusSorting.src}
+                alt={detailsImages.lotusSorting.alt}
                 fill
                 sizes="(max-width: 700px) 100vw, 50vw"
               />
@@ -596,8 +592,8 @@ export default function HomePage() {
 
             <Link className="origin-panel pineapple reveal" href="/materials/pinefiber">
               <Image
-                src="/images/botanical.webp"
-                alt="Hình minh họa lá dứa, nguyên liệu sợi chủ lực dự kiến của SenPine"
+                src={detailsImages.harvest.src}
+                alt={detailsImages.harvest.alt}
                 fill
                 sizes="(max-width: 700px) 100vw, 50vw"
               />
@@ -662,12 +658,10 @@ export default function HomePage() {
                   aria-label={`Khám phá ${material.name}`}
                 >
                   <Image
-                    src="/images/materials.webp"
-                    alt={`Minh họa bề mặt vật liệu ${material.name}`}
-                    width={1536}
-                    height={1024}
-                    sizes="(max-width: 700px) 270vw, 100vw"
-                    style={{ left: `${-(Number(material.number) - 1) * 100}%`, objectPosition: "center", transformOrigin: `${((Number(material.number) - 0.5) / 3) * 100}% 50%` }}
+                    src={materialImages[index].src}
+                    alt={materialImages[index].alt}
+                    fill
+                    sizes="(max-width: 700px) 88vw, 33vw"
                   />
                   <span className="material-photo-label">{lang === "vi" ? material.origin : material.originEn}</span>
                   <span className="material-index" aria-hidden="true">0{index + 1} / 03</span>
@@ -685,7 +679,7 @@ export default function HomePage() {
                     <span className="material-price-label">{t.common.plannedPrice}</span>
                     <span className="material-price-val">
                       {currency(material.price, lang)}
-                      <small style={{ fontSize: "12px", fontWeight: "normal", color: "var(--text-muted)" }}>
+                      <small style={{ fontSize: "var(--type-caption)", fontWeight: "normal", color: "var(--text-muted)" }}>
                         {lang === "vi" ? " / mét" : " / meter"}
                       </small>
                     </span>
@@ -857,8 +851,8 @@ export default function HomePage() {
           <div className="collection-bottom">
             <span className="collection-footnote">
               {lang === "vi"
-                ? "Thiết kế, màu sắc và hình ảnh mang tính minh họa ý tưởng."
-                : "Conceptual design studies. For demonstration purposes."}
+                ? "Hình tham khảo trong đề án · Thiết kế và giá dự kiến."
+                : "Project reference images · Proposed designs and prices."}
             </span>
             <span className="collection-progress" aria-hidden="true"><span ref={railProgress} /></span>
             <span className="collection-scroll-hint">
@@ -901,36 +895,36 @@ export default function HomePage() {
             <div className="passport">
               <div className="passport-top">
                 <Brand small />
-                <span style={{ fontSize: "11px", letterSpacing: "0.14em", fontWeight: "bold", color: "var(--gold)" }}>
+                <span style={{ fontSize: "var(--type-caption)", letterSpacing: "0.14em", fontWeight: "bold", color: "var(--gold)" }}>
                   DIGITAL PRODUCT PASSPORT
                 </span>
               </div>
               <div className="passport-material" style={{ margin: "20px 0" }}>
-                <span style={{ fontSize: "11px", letterSpacing: "0.12em", color: "var(--sage)", fontWeight: "bold" }}>
+                <span style={{ fontSize: "var(--type-caption)", letterSpacing: "0.12em", color: "var(--sage)", fontWeight: "bold" }}>
                   BOTANICAL HERITAGE
                 </span>
-                <h3 style={{ fontSize: "32px", margin: "6px 0" }}>SenPine Blend</h3>
-                <p style={{ fontSize: "14px", color: "var(--text-muted)" }}>
+                <h3 style={{ fontSize: "var(--type-card-title)", margin: "6px 0" }}>SenPine Blend</h3>
+                <p style={{ fontSize: "var(--type-body)", color: "var(--text-muted)" }}>
                   {lang === "vi" ? "95% Sợi lá dứa Cần Thơ + 5% Tơ sen Đồng Tháp" : "95% Pineapple Fiber + 5% Lotus Silk"}
                 </p>
               </div>
               <div className="passport-lines" style={{ display: "flex", flexDirection: "column", gap: "10px", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)", padding: "16px 0" }}>
-                <p style={{ display: "flex", justifyContent: "space-between", margin: 0, fontSize: "13px" }}>
+                <p style={{ display: "flex", justifyContent: "space-between", margin: 0, fontSize: "var(--type-label)" }}>
                   <span style={{ color: "var(--text-muted)" }}>MÃ HỒ SƠ</span>
                   <strong>SP-SB-001</strong>
                 </p>
-                <p style={{ display: "flex", justifyContent: "space-between", margin: 0, fontSize: "13px" }}>
+                <p style={{ display: "flex", justifyContent: "space-between", margin: 0, fontSize: "var(--type-label)" }}>
                   <span style={{ color: "var(--text-muted)" }}>ĐỊA ĐIỂM DỰ KIẾN</span>
                   <strong>KCN Sông Hậu, Cần Thơ</strong>
                 </p>
-                <p style={{ display: "flex", justifyContent: "space-between", margin: 0, fontSize: "13px" }}>
+                <p style={{ display: "flex", justifyContent: "space-between", margin: 0, fontSize: "var(--type-label)" }}>
                   <span style={{ color: "var(--text-muted)" }}>TRẠNG THÁI</span>
                   <strong>Hồ sơ minh họa</strong>
                 </p>
               </div>
               <div className="passport-bottom" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "20px" }}>
                 <ScanLine size={42} strokeWidth={1} style={{ color: "var(--gold)" }} />
-                <p style={{ margin: 0, fontSize: "12px", color: "var(--text-muted)", lineHeight: 1.5 }}>
+                <p style={{ margin: 0, fontSize: "var(--type-caption)", color: "var(--text-muted)", lineHeight: 1.5 }}>
                   Mỗi thước vải,<br />một khởi đầu xanh.
                 </p>
                 <span className="demo-stamp">DEMO TRACE</span>
@@ -976,7 +970,7 @@ export default function HomePage() {
               </div>
             </div>
             <div className="business-visual" aria-hidden="true">
-              <Image src="/images/materials.webp" alt="" fill sizes="(max-width: 900px) 88vw, 38vw" />
+              <Image src={detailsImages.rawFiber.src} alt={detailsImages.rawFiber.alt} fill sizes="(max-width: 900px) 88vw, 38vw" />
               <span className="business-visual-top">SENPINE / MATERIAL STUDY</span>
               <div className="business-visual-bottom">
                 <span>01 / PINEFIBER<br />02 / SENPINE BLEND<br />03 / SENSILK</span>
@@ -1038,19 +1032,19 @@ export default function HomePage() {
             <Link href="/sustainability">{t.nav.sustainability}</Link>
             <Link href="/about">{t.nav.about}</Link>
             <Link href="/contact">{t.nav.contact}</Link>
-            <button onClick={() => open({ kind: "business", intent: "quote" })} style={{ fontSize: "14px", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "6px", marginTop: "10px" }}>
+            <button onClick={() => open({ kind: "business", intent: "quote" })} style={{ fontSize: "var(--type-control)", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "6px", marginTop: "10px" }}>
               {lang === "vi" ? "Trao đổi ý tưởng" : "Propose Concept"} <ArrowUpRight size={14} />
             </button>
           </div>
 
           <div className="footer-about">
             <p className="eyebrow">{t.footer.legalTitle}</p>
-            <p style={{ fontSize: "13px", color: "var(--text-muted)", lineHeight: 1.8 }}>
+            <p style={{ fontSize: "var(--type-body)", color: "var(--text-muted)", lineHeight: 1.8 }}>
               {lang === "vi"
                 ? "SenPine là đề án khởi nghiệp về vật liệu dệt từ lá dứa và tơ sen tại Việt Nam. Website thể hiện định hướng thương hiệu và trải nghiệm sản phẩm."
                 : "SenPine is an academic startup project exploring plant-based textiles from pineapple and lotus in Vietnam."}
             </p>
-            <p style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "12px" }}>
+            <p style={{ fontSize: "var(--type-caption)", color: "var(--text-muted)", marginTop: "12px" }}>
               Trường ĐH Công nghiệp TP.HCM (IUH) • Khoa Quản trị Kinh doanh
             </p>
           </div>
@@ -1061,8 +1055,7 @@ export default function HomePage() {
         </div>
 
         <div className="footer-bottom">
-          <span>© 2026–2027 SenPine · Đề án học thuật</span>
-          <span>Bản demo · Ảnh minh họa AI · Không nhận đơn hàng hoặc thanh toán</span>
+          <span>{t.footer.copyright}</span>
           <Link href="#main" className="back-to-top-link">
             {lang === "vi" ? "Về trang chủ ↑" : "Back to top ↑"}
           </Link>
@@ -1093,28 +1086,29 @@ export default function HomePage() {
                 <Search size={22} />
                 <input
                   type="search"
+                  autoFocus
                   placeholder="Áo sơ mi, khăn, túi vải…"
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                   aria-label="Tìm sản phẩm trong bộ sưu tập"
                 />
               </label>
+              <p className="home-modal-summary" role="status">{matches.length} thiết kế{query.trim() ? " phù hợp" : " trong bộ sưu tập"}</p>
               <div className="search-results">
                 {matches.length ? (
                   matches.map((product) => (
-                    <button key={product.id} onClick={() => open({ kind: "product", id: product.id })}>
-                      <span>
-                        {product.name}
+                    <button key={product.id} className="home-search-result" aria-label={`Xem ${product.name}`} onClick={() => open({ kind: "product", id: product.id })}>
+                      <ProductImage id={product.id} />
+                      <span className="home-result-copy">
+                        <strong>{product.name}</strong>
                         <small>{product.english}</small>
                       </span>
-                      <span>
-                        {currency(product.price, lang)}
-                        <ArrowUpRight size={18} />
-                      </span>
+                      <span className="home-result-price">{currency(product.price, lang)}</span>
+                      <ArrowUpRight size={18} aria-hidden="true" />
                     </button>
                   ))
                 ) : (
-                  <p>Chưa tìm thấy thiết kế phù hợp. Thử tìm “áo”, “váy” hoặc “túi”.</p>
+                  <p className="home-search-empty">Chưa tìm thấy thiết kế phù hợp. Thử tìm “áo”, “váy” hoặc “túi”.</p>
                 )}
               </div>
             </div>
@@ -1126,15 +1120,18 @@ export default function HomePage() {
               <p className="eyebrow">YOUR LITTLE EDIT</p>
               <h2 id="modal-title">Những điều <em>bạn thích.</em></h2>
               {saved.length ? (
+                <>
+                <p className="home-modal-summary">{saved.length} thiết kế đã lưu trên trình duyệt này</p>
                 <div className="saved-list">
                   {saved.map((id) => (
                     <div key={id}>
-                      <button onClick={() => open({ kind: "product", id })}>
+                      <button className="home-saved-product" aria-label={`Xem ${products[id].name}`} onClick={() => open({ kind: "product", id })}>
                         <ProductImage id={id} />
-                        <span>
-                          {products[id].name}
+                        <span className="home-result-copy">
+                          <strong>{products[id].name}</strong>
                           <small>{currency(products[id].price, lang)} · dự kiến</small>
                         </span>
+                        <ArrowUpRight size={18} aria-hidden="true" />
                       </button>
                       <button
                         className="icon-button"
@@ -1146,18 +1143,21 @@ export default function HomePage() {
                     </div>
                   ))}
                 </div>
+                <Link href="/saved" className="text-link home-saved-link">Xem tất cả thiết kế đã lưu <ArrowUpRight size={18} /></Link>
+                </>
               ) : (
                 <div className="empty-state">
                   <Heart size={35} strokeWidth={1} />
+                  <h3>Chưa có thiết kế đã lưu.</h3>
                   <p>
                     Lưu thiết kế bạn thích bằng biểu tượng trái tim.<br />
-                    Danh sách được giữ trong phiên xem này.
+                    Danh sách được giữ trên trình duyệt này.
                   </p>
                   <button
                     className="button button-dark"
                     onClick={() => {
                       setOverlay(null);
-                      document.getElementById("collection")?.scrollIntoView();
+                      requestAnimationFrame(() => document.getElementById("collection")?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" }));
                     }}
                   >
                     Khám phá bộ sưu tập <ArrowUpRight size={18} />
@@ -1192,7 +1192,7 @@ export default function HomePage() {
                   <strong>{currency(selectedProduct.price, lang)}</strong>
                 </div>
                 <p className="modal-note">
-                  Hình ảnh AI và màu sắc là phiên bản demo. Thành phần, kích cỡ và thông số sản phẩm chưa được xác nhận. Chưa mở bán.
+                  Hình tham khảo trong đề án SenPine. Thành phần, kích cỡ và thông số sản phẩm chưa được xác nhận. Chưa mở bán.
                 </p>
                 <button className="button button-dark" onClick={() => toggleSaved(selectedProduct.id)}>
                   {saved.includes(selectedProduct.id) ? "Đã lưu thiết kế" : "Lưu thiết kế yêu thích"}
@@ -1212,11 +1212,11 @@ export default function HomePage() {
               <h2 id="modal-title">{selectedMaterial.name}</h2>
               <div className="material-modal-photo">
                 <Image
-                  src="/images/materials.webp"
-                  alt={`Bề mặt ${selectedMaterial.name} minh họa`}
+                  src={materialImages[Number(selectedMaterial.number) - 1].src}
+                  alt={materialImages[Number(selectedMaterial.number) - 1].alt}
                   fill
                   sizes="700px"
-                  style={{ objectPosition: selectedMaterial.position }}
+                  style={{ objectFit: "contain" }}
                 />
               </div>
               <p>{selectedMaterial.detail}</p>

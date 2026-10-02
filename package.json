@@ -13,7 +13,12 @@
     "typecheck": "tsc --noEmit",
     "check:home": "node scripts/check-home.mjs",
     "check:site": "node scripts/check-site.mjs",
-    "check:motion": "node scripts/check-motion.mjs"
+    "check:motion": "node scripts/check-motion.mjs",
+    "check:story": "node scripts/check-story.mjs",
+    "check:materials": "node scripts/check-materials.mjs",
+    "check:about": "node scripts/check-about.mjs",
+    "check:trace": "node scripts/check-trace.mjs",
+    "check:typography": "node scripts/check-typography.mjs"
   },
   "packageManager": "pnpm@11.19.0",
   "dependencies": {

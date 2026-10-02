@@ -3,6 +3,7 @@ import "@fontsource/be-vietnam-pro/400.css";
 import "@fontsource/be-vietnam-pro/500.css";
 import "@fontsource/be-vietnam-pro/600.css";
 import "@fontsource/be-vietnam-pro/700.css";
+import "./typography.css";
 import "./globals.css";
 import "./pages.css";
 import "./clean-layout.css";

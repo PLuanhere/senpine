@@ -81,12 +81,13 @@ const revealSelector = [
   ".checkout-items > article", ".checkout-summary > *", ".saved-heading > *", ".empty-editorial > *",
   ".cta-band > div > *", ".cta-band > .button", ".collection-filter", ".page-section > .page-note",
   ".form-complete > *", ".checkout-success > *", ".inline-status", ".field-error",
-  ".detail-facts > div", ".detail-actions > *",
+  ".detail-facts > div", ".detail-actions > *", ".document-figure",
 ].join(", ");
 
 const breathingSelector = [
   ".origin-panel > img", ".material-photo > img", ".product-image", ".material-artwork",
   ".page-hero-image > img", ".story-photo > img", ".sustainability-image > img",
+  ".story-collage-main > img", ".story-origin-photo > img", ".story-stage-image > img",
   ".journey-figure-slide > img", ".journey-stage-number", ".business-visual > img",
   ".business-visual-mark", ".passport", ".brand-mark", ".round-arrow > svg", ".empty-editorial > svg",
 ].join(", ");

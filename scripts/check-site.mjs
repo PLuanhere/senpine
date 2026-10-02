@@ -51,12 +51,12 @@ try {
 
   await open("/trace");
   await page.locator("#trace-code").fill("SP-SB-001");
-  await page.getByRole("button", { name: "Tìm hồ sơ" }).click();
+  await page.getByRole("button", { name: "Truy xuất hồ sơ" }).click();
   await page.waitForURL("**/trace/SP-SB-001");
   assert.ok((await page.locator("main").innerText()).includes("SenPine Blend"));
   await open("/trace");
   await page.locator("#trace-code").fill("UNKNOWN");
-  await page.getByRole("button", { name: "Tìm hồ sơ" }).click();
+  await page.getByRole("button", { name: "Truy xuất hồ sơ" }).click();
   assert.ok(await page.locator("#trace-error").isVisible());
 
   await open("/business/request-sample");

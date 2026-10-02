@@ -31,7 +31,7 @@ try {
   await page.waitForFunction(() => document.querySelector(".journey-figure-slide.is-active img")?.complete);
   await page.locator(".journey-stage-button").nth(3).click();
   assert.equal(await page.locator(".journey-stage-button").nth(3).getAttribute("aria-expanded"), "true");
-  assert.ok((await page.locator(".journey-figure-slide.is-active img").getAttribute("src")).includes("materials.webp"));
+  assert.ok((await page.locator(".journey-figure-slide.is-active img").getAttribute("src")).includes("spinning-machine.webp"));
   await page.locator(".journey-stage-button").first().click();
   await page.screenshot({ path: `${output}/desktop-journey.png` });
   await page.locator("#materials").scrollIntoViewIfNeeded();

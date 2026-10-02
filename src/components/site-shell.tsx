@@ -364,8 +364,7 @@ export function SiteFooter() {
       </div>
 
       <div className="footer-bottom">
-        <span>© 2026–2027 SenPine · Đề án học thuật</span>
-        <span>Bản demo · Ảnh minh họa AI · Chưa nhận đơn hàng hay thanh toán</span>
+        <span>{t.footer.copyright}</span>
         <Link href="#main" className="back-to-top-link">
           {lang === "vi" ? "Về trang chủ ↑" : "Back to top ↑"}
         </Link>

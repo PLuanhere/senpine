@@ -1,3 +1,5 @@
+import { detailsImages } from "@/lib/imagery";
+
 export const navigation = [
   ["Câu chuyện", "/story"],
   ["Vật liệu", "/materials"],
@@ -291,7 +293,7 @@ export const journey: JourneyStep[] = [
     label: "NATURE",
     text: "Lá dứa sau thu hoạch tại Cần Thơ, Hậu Giang và cuống sen Đồng Tháp mở đầu chuỗi giá trị tuần hoàn. Hợp tác nâng cao thu nhập cho nông hộ.",
     textEn: "Post-harvest pineapple leaves in Can Tho, Hau Giang and lotus stems from Dong Thap initiate our circular chain, uplifting local farming communities.",
-    image: "origins",
+    image: detailsImages.harvest.src,
   },
   {
     step: "02",
@@ -300,7 +302,7 @@ export const journey: JourneyStep[] = [
     label: "EXTRACTION",
     text: "Lá tươi được đưa qua máy tuốt xơ cơ học, rửa sạch tạp chất, ép nước và sấy kiểm soát nhiệt độ nhằm giữ trọn độ bền kéo tự nhiên của cellulose.",
     textEn: "Fresh leaves undergo specialized mechanical decortication, purification washing, and controlled dehydration to preserve inherent cellulose tensile strength.",
-    image: "botanical",
+    image: detailsImages.extraction.src,
   },
   {
     step: "03",
@@ -309,7 +311,7 @@ export const journey: JourneyStep[] = [
     label: "FIBER",
     text: "Xơ dứa và xơ tơ sen được chải kỹ, loại bỏ sợi ngắn và phân loại độ mảnh theo quy chuẩn kỹ thuật phòng thí nghiệm trước khi đưa vào dệt.",
     textEn: "Pineapple and lotus fibers are meticulously carded, eliminating short fuzz and categorizing micron fineness to laboratory standards.",
-    image: "materials",
+    image: detailsImages.drying.src,
   },
   {
     step: "04",
@@ -318,7 +320,7 @@ export const journey: JourneyStep[] = [
     label: "YARN",
     text: "Hệ thống máy kéo sợi chuyên dụng tạo ra sợi đơn và sợi chập (95% dứa + 5% sen) với độ săn đồng đều, sẵn sàng cho các kiểu dệt phong phú.",
     textEn: "High-precision spinning creates single and blended yarns (95% pineapple + 5% lotus) with uniform twist, primed for versatile weaving looms.",
-    image: "materials",
+    image: detailsImages.spinning.src,
   },
   {
     step: "05",
@@ -327,7 +329,7 @@ export const journey: JourneyStep[] = [
     label: "FABRIC",
     text: "Máy dệt thoi hiện đại đan xen từng tao sợi thành các thước vải PineFiber, SenPine Blend và SenSilk với độ rủ, độ bền và cảm giác chạm hoàn hảo.",
     textEn: "Modern looms weave yarn threads into PineFiber, SenPine Blend, and SenSilk with impeccable tactile hand-feel and structural integrity.",
-    image: "materials",
+    image: detailsImages.loom.src,
   },
   {
     step: "06",
@@ -336,7 +338,7 @@ export const journey: JourneyStep[] = [
     label: "FINISHING",
     text: "Vải trải qua quá trình tiền xử lý sinh học không clo độc hại, nhuộm màu tự nhiên hoặc giữ sắc mộc nguyên bản theo bản vẽ nhà mốt.",
     textEn: "Fabrics undergo non-toxic enzyme bioscouring and natural plant dyeing or remain in unbleached ivory hues per designers' artistic vision.",
-    image: "collection",
+    image: detailsImages.sensilk.src,
   },
   {
     step: "07",
@@ -345,7 +347,7 @@ export const journey: JourneyStep[] = [
     label: "FASHION",
     text: "Mỗi sản phẩm hoàn thiện được gắn mã truy xuất nguồn gốc số (Product Passport), cho phép kiểm tra toàn bộ dữ liệu minh bạch đến tận nông hộ.",
     textEn: "Each finished garment is paired with a Digital Product Passport, empowering consumers to trace the entire lineage back to the farmer.",
-    image: "fashion",
+    image: detailsImages.runway.src,
   },
 ];
 

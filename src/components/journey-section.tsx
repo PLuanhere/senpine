@@ -8,24 +8,39 @@ import { useLanguage } from "@/lib/language-context";
 import { translations } from "@/lib/i18n";
 import { useMotion } from "@/lib/motion-context";
 
+const STAGE_DURATION = 4000;
+
 export function JourneySection() {
   const { lang } = useLanguage();
   const t = translations[lang];
-  const [current, setCurrent] = useState(0);
+  const [playback, setPlayback] = useState({ index: 0, direction: 1 });
+  const current = playback.index;
   const section = useRef<HTMLElement>(null);
-  const pauseUntil = useRef(0);
+  const nextChangeAt = useRef(0);
   const { enabled, intro } = useMotion();
   const selectedStep = journey[current];
 
   useEffect(() => {
     if (!enabled || intro !== "done" || !section.current) return;
     let visible = false;
-    const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; }, { threshold: 0.25 });
-    observer.observe(section.current);
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting && entry.intersectionRatio >= 0.1;
+      nextChangeAt.current = Date.now() + STAGE_DURATION;
+    }, { threshold: 0.1 });
+    observer.observe(section.current.querySelector(".journey-stages") ?? section.current);
     const timer = window.setInterval(() => {
-      if (!visible || document.hidden || Date.now() < pauseUntil.current || section.current?.querySelector(".journey-stage-button:hover, .journey-stage-button:focus-visible") || document.querySelector("dialog[open], .mobile-nav")) return;
-      setCurrent((index) => (index + 1) % journey.length);
-    }, 4800);
+      const now = Date.now();
+      if (!visible || document.hidden || document.querySelector("dialog[open], .mobile-nav")) {
+        nextChangeAt.current = now + STAGE_DURATION;
+        return;
+      }
+      if (now < nextChangeAt.current) return;
+      nextChangeAt.current = now + STAGE_DURATION;
+      setPlayback(({ index, direction }) => {
+        const nextDirection = index === journey.length - 1 ? -1 : index === 0 ? 1 : direction;
+        return { index: index + nextDirection, direction: nextDirection };
+      });
+    }, 250);
     return () => { observer.disconnect(); clearInterval(timer); };
   }, [enabled, intro]);
 
@@ -62,7 +77,7 @@ export function JourneySection() {
               {journey.map((step, index) => (
                 <div key={step.step} className={`journey-figure-slide ${index === current ? "is-active" : ""}`} aria-hidden={index !== current}>
                   <Image
-                    src={"/images/" + step.image + ".webp"}
+                    src={step.image}
                     alt={index === current ? lang === "vi" ? "Minh họa " + step.title.toLowerCase() : "Illustration of " + step.titleEn.toLowerCase() : ""}
                     fill
                     sizes="(max-width: 900px) 88vw, 42vw"
@@ -102,7 +117,10 @@ export function JourneySection() {
                     id={`journey-stage-${step.step}`}
                     aria-controls={`journey-panel-${step.step}`}
                     aria-expanded={isCurrent}
-                    onClick={() => { pauseUntil.current = Date.now() + 10000; setCurrent(index); }}
+                    onClick={() => {
+                      nextChangeAt.current = Date.now() + STAGE_DURATION;
+                      setPlayback((previous) => ({ ...previous, index }));
+                    }}
                   >
                     <span className="journey-stage-number">{step.step}</span>
                     <span className="journey-stage-title">{lang === "vi" ? step.title : step.titleEn}</span>

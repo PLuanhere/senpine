@@ -275,7 +275,7 @@ export const translations: Record<Language, TranslationDictionary> = {
       newsletterBtn: "Đăng ký",
       newsletterSuccess: "Cảm ơn bạn đã quan tâm đến nghiên cứu của SenPine.",
       disclaimer: "Lưu ý: SenPine là đề án nghiên cứu và khởi nghiệp học thuật thuộc Trường ĐH Công nghiệp TP.HCM (IUH). Toàn bộ nội dung, hình ảnh minh họa AI, mã truy xuất và bảng giá kế hoạch phục vụ bản mô phỏng tương tác; website không nhận đơn hàng hay thanh toán thương mại thực tế.",
-      copyright: "© 2026–2027 Công ty Cổ phần SenPine. Bảo lưu mọi quyền.",
+      copyright: "© 2026–2027 SenPine. Bảo lưu mọi quyền.",
       backToTop: "Về đầu trang ↑",
     },
     common: {
@@ -428,7 +428,7 @@ export const translations: Record<Language, TranslationDictionary> = {
       newsletterBtn: "Subscribe",
       newsletterSuccess: "Thank you for your interest in SenPine research.",
       disclaimer: "Notice: SenPine is an academic startup and research project affiliated with Industrial University of Ho Chi Minh City (IUH). All images, batch codes, and planned price points simulate digital brand experience and commerce; no financial transactions are processed.",
-      copyright: "© 2026–2027 SenPine Corporation. All rights reserved.",
+      copyright: "© 2026–2027 SenPine. All rights reserved.",
       backToTop: "Back to top ↑",
     },
     common: {

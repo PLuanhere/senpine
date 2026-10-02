@@ -58,7 +58,7 @@
 
 .hero-scene-caption {
   color: #e5c77f;
-  font-size: 12px;
+  font-size: var(--type-caption);
   font-weight: 600;
   letter-spacing: 0.15em;
 }
@@ -74,8 +74,8 @@
   padding: 0 0 9px;
   border-bottom: 1px solid rgba(247, 243, 233, 0.5);
   color: #f7f3e9;
-  font-size: 12px;
-  text-align: left;
+  font-size: var(--type-control);
+  text-align: left; font-weight: 600; 
 }
 
 .hero-scene-buttons button::after {
@@ -107,7 +107,7 @@
   align-items: center;
   gap: 12px;
   color: #c6d5c9;
-  font-size: 11px;
+  font-size: var(--type-caption);
   font-weight: 600;
   letter-spacing: 0.14em;
 }
@@ -247,7 +247,7 @@
   padding: 4px 9px;
   background: rgba(14, 28, 19, 0.85);
   color: #e5c77f;
-  font-size: 11px;
+  font-size: var(--type-caption);
   font-weight: 600;
   letter-spacing: 0.08em;
 }
@@ -368,7 +368,7 @@
 .business-visual-top {
   top: 24px;
   color: #e5c77f;
-  font-size: 12px;
+  font-size: var(--type-caption);
   font-weight: 600;
   letter-spacing: 0.13em;
 }
@@ -380,7 +380,7 @@
   align-items: end;
   gap: 24px;
   color: #f7f3e9;
-  font-size: 12px;
+  font-size: var(--type-caption);
   font-weight: 600;
   letter-spacing: 0.09em;
   line-height: 1.8;
